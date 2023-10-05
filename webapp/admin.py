@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from webapp.models import BotUser, BotSettings
+from webapp.models import BotUser, BotSettings, PaymentBills, Transaction, Profiles
 
 
 @admin.register(BotSettings)
@@ -30,4 +30,72 @@ class BotUserAdmin(admin.ModelAdmin):
         "tlg_id",
         "tlg_username",
         "start_bot_at",
+    )
+
+
+@admin.register(PaymentBills)
+class PaymentBillsAdmin(admin.ModelAdmin):
+    list_display = (
+        "pk",
+        "bot_user",
+        "amount",
+        "created_at",
+        "pay_method",
+        "status",
+        "file",
+    )
+    list_display_links = (
+        "pk",
+        "bot_user",
+        "amount",
+        "created_at",
+        "pay_method",
+        "status",
+    )
+    list_filter = (
+        "pay_method",
+        "status",
+    )
+
+
+@admin.register(Transaction)
+class TransactionAdmin(admin.ModelAdmin):
+    list_display = (
+        'pk',
+        'bot_user',
+        'amount',
+        'operation_type',
+        'created_at',
+        'short_description',
+    )
+    list_display_links = (
+        'pk',
+        'bot_user',
+        'amount',
+        'operation_type',
+        'created_at',
+        'short_description',
+    )
+    list_filter = (
+        "operation_type",
+    )
+
+    def short_description(self, obj: Transaction):
+        """
+        Метод для преобразования описания в сокращённый вариант.
+        """
+        return obj.description if len(obj.description) < 48 else f"{obj.description[:48]}..."
+
+
+@admin.register(Profiles)
+class ProfilesAdmin(admin.ModelAdmin):
+    list_display = (
+        'pk',
+        'bot_user',
+        'balance',
+    )
+    list_display_links = (
+        'pk',
+        'bot_user',
+        'balance',
     )

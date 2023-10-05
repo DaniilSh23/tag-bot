@@ -21,7 +21,8 @@ async def start_handler(_, update):
     # Записываем или обновляем юзера в БД
     await update_or_create_bot_user(update)
     button_data = (
-        ('💲 Мой баланс', f"{BASE_HOST}{reverse(viewname='webapp:balance')}?token={BOT_TOKEN}"),
+        ('💲 Мой баланс', f"{BASE_HOST}{reverse(viewname='webapp:balance')}"
+                         f"?token={BOT_TOKEN}&tlg_id={update.from_user.id}"),
     )
     await update.reply_text(
         text=f'👋 Привет!\n\nЭто бот теггер. Он тегает людей в Ваших групповых чатах.',
