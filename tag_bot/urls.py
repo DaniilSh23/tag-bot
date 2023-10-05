@@ -15,8 +15,27 @@ Including another URLconf
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
 from django.contrib import admin
-from django.urls import path
+from django.urls import path, include
+from drf_spectacular.views import SpectacularAPIView, SpectacularSwaggerView, SpectacularRedocView
+from django.conf.urls.static import static
+from tag_bot import settings
 
 urlpatterns = [
     path('admin/', admin.site.urls),
+    path('webapp/', include('webapp.urls')),
+
+    # Урлы для страниц документации API (сделано через drf_spectacular)
+    path('api/schema/', SpectacularAPIView.as_view(), name='schema'),
+    path('api/docs/', SpectacularSwaggerView.as_view(url_name='schema'), name='swagger'),
+    path('api/redoc/', SpectacularRedocView.as_view(url_name='schema'), name='redoc'),
 ]
+
+# Определяем путь к статике и медиа, когда дебаг включен
+if settings.DEBUG:
+    urlpatterns.extend(
+        static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+    )
+
+    urlpatterns.extend(
+        static(settings.STATIC_URL, document_root=settings.STATICFILES_DIRS)
+    )
