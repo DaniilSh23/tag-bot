@@ -64,6 +64,7 @@ class PaymentBills(models.Model):
     pay_method = models.CharField(verbose_name='способ оплаты', choices=pay_methods_tpl)
     status = models.CharField(verbose_name='статус', choices=statuses_tpl, default='created')
     file = models.FileField(verbose_name='файл', null=True, upload_to='bill_files/')
+    bill_hash = models.CharField(verbose_name='хэш', max_length=100, blank=True, null=True)
 
     class Meta:
         ordering = ['-id']

@@ -193,6 +193,12 @@ CELERY_BROKER_URL = f"redis://{REDIS_HOST}:{REDIS_PORT}"  # Это адрес б
 CELERY_RESULT_BACKEND = f"redis://{REDIS_HOST}:{REDIS_PORT}"  # Это адрес бэкэнда результатов (тоже у нас Redis)
 CELERY_TIMEZONE = "Europe/Moscow"  # Временная зона для Celery
 CELERY_BEAT_SCHEDULE = {  # Настройки шедуля
+    # Закрытие истекших счетов на оплату
+    'close_expired_bills': {
+        'task': 'webapp.tasks.close_expired_bills',
+        'schedule': 60 * 5,
+    },
+    # Примеры ниже
     'test_by_sec': {
         'task': 'webapp.tasks.scheduled_task_example',
         'schedule': 3600,

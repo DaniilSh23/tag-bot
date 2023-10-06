@@ -1,0 +1,42 @@
+{% extends 'webapp/base.html' %}
+
+{% block 'title' %}
+    Второй шаг пополнения баланса
+{% endblock %}
+
+{% block 'body' %}
+<div class="row">
+    <h4 class="fw-bold py-3 mb-1"><span class="text-muted fw-light">Баланс /</span> Подтверждение оплаты</h4>
+    <div class="col-xl-6 my-form-border">
+        <div class="card mb-1 my-form-area">
+            <!--        <h5 class="card-header mb-0 pb-0">Посмо</h5>-->
+<!--            <div class="card-body">-->
+<!--                <div class="row gy-3">-->
+<!--                    <div class="col-md">-->
+<!--                        <div class="demo-inline-spacing mt-1">-->
+                            <form id="interestsForm" action="{% url 'webapp:balance' %}" method="post">
+                                {% csrf_token %}
+                                <input type="hidden" name="bill_hash" value="{{ bill_hash }}">
+                                <div class="row">
+                                    <div class="col-12">
+                                        <div class="card">
+                                            <h5 class="card-header">Custom file input</h5>
+                                            <div class="card-body demo-vertical-spacing demo-only-element">
+                                                <div class="input-group">
+                                                    <input type="file" name="bill_file" class="form-control" id="inputGroupFile04" aria-describedby="inputGroupFileAddon04" aria-label="Upload">
+                                                    <button class="btn btn-outline-primary" type="submit" id="inputGroupFileAddon04">Button</button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </form>
+<!--                        </div>-->
+<!--                    </div>-->
+<!--                </div>-->
+<!--            </div>-->
+        </div>
+    </div>
+</div>
+
+{% endblock %}
