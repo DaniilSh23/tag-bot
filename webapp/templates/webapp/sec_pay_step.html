@@ -7,9 +7,24 @@
 {% block 'body' %}
 <div class="row">
     <h4 class="fw-bold py-3 mb-1"><span class="text-muted fw-light">Баланс /</span> Подтверждение оплаты</h4>
+
+    <div class="col-xl-6 my-form-border">
+        <div class="card mb-4 my-form-area">
+            <ul class="list-group list-group-flush">
+                <li class="list-group-item">💳 <strong>Способ оплаты:</strong>
+                    {% if pay_method == 'to_card' %}
+                    <code>Перевод на карту</code>
+                    {% endif %}
+                </li>
+                <li class="list-group-item">💵 <strong>Сумма:</strong> <code>{{ amount }}</code> ₽</li>
+                <li class="list-group-item">🧾 <strong>Данные для оплаты:</strong> <code>{{ to_card_pay_data }}</code></li>
+            </ul>
+        </div>
+    </div>
+
     <div class="col-xl-6 my-form-border">
         <div class="card mb-1 my-form-area">
-            <!--        <h5 class="card-header mb-0 pb-0">Посмо</h5>-->
+<!--            <h5 class="card-header mb-0 pb-0">Посмо</h5>-->
 <!--            <div class="card-body">-->
 <!--                <div class="row gy-3">-->
 <!--                    <div class="col-md">-->
@@ -20,11 +35,11 @@
                                 <div class="row">
                                     <div class="col-12">
                                         <div class="card">
-                                            <h5 class="card-header">Custom file input</h5>
+                                            <h5 class="card-header">Прикрепите скриншот или чек</h5>
                                             <div class="card-body demo-vertical-spacing demo-only-element">
                                                 <div class="input-group">
                                                     <input type="file" name="bill_file" class="form-control" id="inputGroupFile04" aria-describedby="inputGroupFileAddon04" aria-label="Upload">
-                                                    <button class="btn btn-outline-primary" type="submit" id="inputGroupFileAddon04">Button</button>
+                                                    <button class="btn btn-outline-primary my-btn-clr" type="submit" id="inputGroupFileAddon04">Подтвердить</button>
                                                 </div>
                                             </div>
                                         </div>

@@ -50,5 +50,7 @@ class BalanceServices:
         context = {
             'to_card_pay_data': BotSettings.objects.get(key='to_card_pay_data').value,
             'bill_hash': bill_obj.bill_hash,
+            'pay_method': bill_obj.pay_method,
+            'amount': bill_obj.amount,
         }
         return 200, context
