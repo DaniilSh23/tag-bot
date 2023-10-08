@@ -55,6 +55,7 @@ class PaymentBills(models.Model):
         ('created', 'создан'),
         ('on_check', 'на проверке'),
         ('payed', 'оплачен'),
+        ('decline', 'отклонен'),
         ('close_without_pay', 'закрыт без оплаты'),
     )
 

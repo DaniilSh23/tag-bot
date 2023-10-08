@@ -26,9 +26,10 @@
 
     <div class="col-xl-6 my-form-border">
         <div class="card mb-1 my-form-area">
-            <form id="interestsForm" action="{% url 'webapp:sec_pay_step' %}" method="post" enctype="multipart/form-data">
+            <form id="interestsForm" action="{% url 'webapp:check_payment' %}" method="post" enctype="multipart/form-data">
                 {% csrf_token %}
                 <input type="hidden" name="tg_msg_id" value="{{ tg_msg_id }}">
+                <input type="hidden" name="accept_pay_flag" id="acceptPayFlag">
                 {% if messages %}
                     <ul class="messages">
                         {% for message in messages %}
@@ -41,12 +42,15 @@
                 <div class="row">
                     <div class="col-12">
                         <div class="card">
-                            <h5 class="card-header">Прикрепите скриншот или чек</h5>
+                            <h5 class="card-header">Подтверждение платежа</h5>
                             <div class="card-body demo-vertical-spacing demo-only-element">
-                                <small class="text-light fw-semibold">Пожалуйста, прикрепите скриншон или чек для подтверждения платежа и нажмите кнопку "Отправить"</small>
+                                <small class="text-light fw-semibold"><b>Подтвердите</b> или <b>отклоните платёж</b>, нажав соответствующие кнопки. Вы также можете указать какой-либо комментарий. Он будет отправлен пользователю как в случае отклонения платежа, так и в случае подтверждения.</small>
                                 <div class="input-group">
-                                    <input type="file" name="bill_file" class="form-control" id="inputGroupFile04" aria-describedby="inputGroupFileAddon04" aria-label="Upload">
-                                    <button class="btn rounded-pill btn-info btn-outline-primary my-btn-clr" type="submit" id="inputFileButton">Отправить</button>
+                                    <textarea name="bill_comment" id="bill_comment" cols="30" rows="5" placeholder="Укажите какой-либо комментарий. Это поле можно оставить пустым."></textarea>
+                                </div>
+                                <div class="input-group">
+                                    <button class="btn rounded-pill btn-info btn-outline-primary my-btn-clr" type="submit" id="confirmPaymentButton">✅ Подтвердить</button>
+                                    <button class="btn rounded-pill btn-info btn-outline-primary my-btn-clr" type="submit" id="declinePaymentButton">❌ Отклонить</button>
                                 </div>
                             </div>
                         </div>
@@ -57,15 +61,32 @@
     </div>
 </div>
 
-{% endblock %}
+<!-- скрипт для работы с данными от телеги-->
+<script>
+  var tgObject = window.Telegram.WebApp;
+  tgObject.enableClosingConfirmation()  // предупреждение при закрытии WebApp
+</script>
 
 <!--скрипт для отключения кнопки отправки формы при клике по ней-->
 <script>
-  let createButton = document.getElementById('inputFileButton');
+  let confirmPaymentButton = document.getElementById('confirmPaymentButton');
+  let declinePaymentButton = document.getElementById('declinePaymentButton');
+  let acceptPayFlag = document.getElementById('acceptPayFlag');
   let applicationForm = document.getElementById('interestsForm');
-  createButton.addEventListener('click', function() {
-      createButton.setAttribute("disabled", "disabled");
-      createButton.textContent = '⌛️ Отправляю файл...';
+  confirmPaymentButton.addEventListener('click', function() {
+      declinePaymentButton.setAttribute("disabled", "disabled");
+      confirmPaymentButton.setAttribute("disabled", "disabled");
+      confirmPaymentButton.textContent = '⌛️ Отправляю данные...';
+      acceptPayFlag.setAttribute("value", "1");
+      applicationForm.submit();
+  });
+  declinePaymentButton.addEventListener('click', function() {
+      declinePaymentButton.setAttribute("disabled", "disabled");
+      confirmPaymentButton.setAttribute("disabled", "disabled");
+      declinePaymentButton.textContent = '⌛️ Отправляю данные...';
+      acceptPayFlag.setAttribute("value", "0");
       applicationForm.submit();
   });
 </script>
+
+{% endblock %}

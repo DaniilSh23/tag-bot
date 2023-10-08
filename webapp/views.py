@@ -6,7 +6,7 @@ from django.views import View
 from django.contrib import messages as err_msgs
 
 from tag_bot.settings import MY_LOGGER, BOT_TOKEN
-from webapp.forms import BalanceForm, SecPayStepForm
+from webapp.forms import BalanceForm, SecPayStepForm, CheckPaymentForm
 from webapp.services.balance_services import BalanceServices
 
 
@@ -133,9 +133,36 @@ class CheckPayment(View):
                               f'его значение: {request.GET.get("bill_hash")}')
             return HttpResponse(content='invalid request params!', status=400)
 
-        # TODO: вызов бизнес логики
+        # вызов сервиса для бизнес-логики
         status, get_bill_rslt = BalanceServices.get_bill(bill_hash=request.GET.get("bill_hash"))
         if status != 200:  # Обработка на случай если счет не найден в БД
             return HttpResponse(content=get_bill_rslt, status=status)
         get_bill_rslt['tg_msg_id'] = request.GET.get('tg_msg_id')
         return render(request, template_name='webapp/check_payment.html', context=get_bill_rslt)
+
+    def post(self, request):
+        MY_LOGGER.info(f"Получен POST запрос на вьюшку CheckPayment | {request.POST}")
+
+        form = CheckPaymentForm(request.POST)
+        if form.is_valid():
+
+            # Вызов сервиса для выполнения бзнес-логики
+            status, payload = BalanceServices.confirm_or_decline_payment(
+                bill_hash=form.cleaned_data.get("bill_hash"),
+                bill_comment=form.cleaned_data.get("bill_comment"),
+                tg_msg_id=form.cleaned_data.get("tg_msg_id"),
+                accept_pay_flag=form.cleaned_data.get("accept_pay_flag"),
+            )
+            if status != 200:
+                return HttpResponse(content=payload, status=status)
+            return render(request, template_name='webapp/success.html', context=payload)
+
+        # Если форма невалидна
+        MY_LOGGER.warning(f'Данные формы невалидны: {form.errors!r}')
+        status, get_bill_rslt = BalanceServices.get_bill(bill_hash=request.GET.get("bill_hash"))
+        if status != 200:  # Обработка на случай если счет не найден в БД
+            return HttpResponse(content=get_bill_rslt, status=status)
+        get_bill_rslt['tg_msg_id'] = request.GET.get('tg_msg_id')
+        err_msgs.error(request, f'Ошибка: неверные данные формы | {form.errors!r}')
+        return render(request, template_name='webapp/check_payment.html', context=get_bill_rslt)
+

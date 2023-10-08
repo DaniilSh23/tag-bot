@@ -19,3 +19,13 @@ class SecPayStepForm(forms.Form):
 
     class Meta:
         enctype = 'multipart/form-data'
+
+
+class CheckPaymentForm(forms.Form):
+    """
+    Форма для подтверждения или отклонения платежа.
+    """
+    bill_hash = forms.CharField()
+    bill_comment = forms.CharField(required=False)
+    tg_msg_id = forms.IntegerField()
+    accept_pay_flag = forms.IntegerField(min_value=0, max_value=1)

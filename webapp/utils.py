@@ -27,35 +27,38 @@ def handle_uploaded_file(file: UploadedFile, bill_pk: int):
     return file_path
 
 
-def send_command_to_bot(command, disable_notification=True, file_path=None):
+def send_message_from_bot(text, disable_notification=True, file_path=None, target_chat=None):
     """
-    Функция для отправки боту разных команд.
+    Функция для отправки сообщений от лица бота.
+    Если не указан file_path, то будет выполнен метод TG API sendMessage, иначе sendDocument.
+    Если не указан target_chat, то из БД будет взят ID юзера, под ключом who_approve_payments
     """
-    MY_LOGGER.info(f'Выполняем функцию для отправки команды боту: {command!r}.')
+    MY_LOGGER.info(f'Выполняем функцию для отправки сообщения от лица бота. Текст: {text!r}.')
 
-    target_chat = BotSettings.objects.get(key='who_approve_payments').value
+    if not target_chat:
+        target_chat = BotSettings.objects.get(key='who_approve_payments').value
     url = f'https://api.telegram.org/bot{BOT_TOKEN}/'
     data = {'chat_id': target_chat, 'disable_notification': disable_notification, 'parse_mode': 'HTML'}
 
     # Ветвление: команда сразу с файлом или без
-    MY_LOGGER.debug(f'Готовим данные и выполняем запрос на отправку команды боту, данные запроса: {data}')
+    MY_LOGGER.debug(f'Готовим данные и выполняем запрос на отправку сообщения от бота, данные запроса: {data}')
     if file_path:
 
         # Открываем файл, как байты и посылаем запрос
         with open(file=file_path, mode='rb') as file:
             file_name = os.path.split(file_path)[-1]
-            data['caption'] = command
+            data['caption'] = text
             files = {'document': (file_name, file)}
             response = requests.post(url=f"{url}sendDocument", data=data, files=files)
     else:
-        data['text'] = command
+        data['text'] = text
         response = requests.post(url=f"{url}sendMessage", data=data)
 
     if response.status_code != 200:  # Обработка неудачного запроса на отправку
-        MY_LOGGER.error(f'Неудачная отправка команды боту.\n'
+        MY_LOGGER.error(f'Неудачная отправка сообщения от лица бота.\n'
                         f'Запрос: url={url} | data={data}\n'
                         f'Ответ:{response.json()}')
         return
-    MY_LOGGER.success(f'Успешная отправка команды {command!r} боту.')
+    MY_LOGGER.success(f'Успешная отправка сообщения {text!r} от лица бота.')
     return True
 

@@ -41,7 +41,7 @@
                         <div class="card">
                             <h5 class="card-header">Прикрепите скриншот или чек</h5>
                             <div class="card-body demo-vertical-spacing demo-only-element">
-                                <small class="text-light fw-semibold">Пожалуйста, прикрепите скриншон или чек для подтверждения платежа и нажмите кнопку "Отправить"</small>
+                                <small class="text-light fw-semibold">Пожалуйста, прикрепите скриншот или чек для подтверждения платежа и нажмите кнопку "Отправить"</small>
                                 <div class="input-group">
                                     <input type="file" name="bill_file" class="form-control" id="inputGroupFile04" aria-describedby="inputGroupFileAddon04" aria-label="Upload">
                                     <button class="btn rounded-pill btn-info btn-outline-primary my-btn-clr" type="submit" id="inputFileButton">Отправить</button>
@@ -55,15 +55,23 @@
     </div>
 </div>
 
-{% endblock %}
+<!-- скрипт для работы с данными от телеги-->
+<script>
+  var tgObject = window.Telegram.WebApp;
+  tgObject.enableClosingConfirmation()  // предупреждение при закрытии WebApp
+</script>
 
 <!--скрипт для отключения кнопки отправки формы при клике по ней-->
 <script>
-  let createButton = document.getElementById('inputFileButton');
-  let applicationForm = document.getElementById('interestsForm');
-  createButton.addEventListener('click', function() {
-      createButton.setAttribute("disabled", "disabled");
-      createButton.textContent = '⌛️ Отправляю файл...';
-      applicationForm.submit();
+  let inputFileButton = document.getElementById('inputFileButton'); // Берем кнопку
+  let applicationForm = document.getElementById('interestsForm'); // Берем форму
+  let inputFileField = document.getElementById('inputGroupFile04'); // Берем input для файла
+  inputFileButton.addEventListener('click', function() {
+      inputFileButton.setAttribute("disabled", "disabled");     // Отключаем кнопку
+      // inputFileField.setAttribute("type", "hidden");  // Отключаем input для файла
+      inputFileButton.textContent = '⌛️ Отправляю файл...';     // Меняем текст кнопки
+      applicationForm.submit();     // Швыряем форму на бэк
   });
 </script>
+
+{% endblock %}
