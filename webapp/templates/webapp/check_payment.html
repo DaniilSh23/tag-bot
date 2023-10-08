@@ -1,7 +1,7 @@
 {% extends 'webapp/base.html' %}
 
 {% block 'title' %}
-    Второй шаг пополнения баланса
+    Подтверждение платежа
 {% endblock %}
 
 {% block 'body' %}
@@ -13,11 +13,13 @@
             <ul class="list-group list-group-flush">
                 <li class="list-group-item">💳 <strong>Способ оплаты:</strong>
                     {% if pay_method == 'to_card' %}
-                    <code>Перевод на карту</code>
+                        <code>Перевод на карту</code>
                     {% endif %}
                 </li>
                 <li class="list-group-item">💵 <strong>Сумма:</strong> <code>{{ amount }}</code> ₽</li>
-                <li class="list-group-item">🧾 <strong>Данные для оплаты:</strong> <code>{{ to_card_pay_data }}</code></li>
+                <li class="list-group-item">🧾 <strong>Дата и время счета:</strong> <code>{{ created_at }}</code></li>
+                <li class="list-group-item">🔹 <strong>Статус:</strong> <code>{{ status }}</code></li>
+                <li class="list-group-item">🦧 <strong>Юзер бота:</strong> <code>{{ bot_user.tlg_id }} | <a href="https://t.me/{{ bot_user.tlg_username }}">@{{ bot_user.tlg_username }}</a></code></li>
             </ul>
         </div>
     </div>
@@ -26,7 +28,7 @@
         <div class="card mb-1 my-form-area">
             <form id="interestsForm" action="{% url 'webapp:sec_pay_step' %}" method="post" enctype="multipart/form-data">
                 {% csrf_token %}
-
+                <input type="hidden" name="tg_msg_id" value="{{ tg_msg_id }}">
                 {% if messages %}
                     <ul class="messages">
                         {% for message in messages %}

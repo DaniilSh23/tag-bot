@@ -1,14 +1,12 @@
 """
 Основные хэндлеры бота.
 """
-from asgiref.sync import sync_to_async
 from pyrogram import Client, filters
 from django.urls import reverse
 
 from tag_bot.settings import MY_LOGGER, BOT_TOKEN, BASE_HOST
 from tgbot.keyboards.bot_keyboards import form_webapp_kbrd
-from tgbot.tests import update_or_create_bot_user
-from webapp.models import BotUser
+from tgbot.db_work import update_or_create_bot_user
 
 
 @Client.on_message(filters.command(['start', 'menu']))
@@ -28,3 +26,12 @@ async def start_handler(_, update):
         text=f'👋 Привет!\n\nЭто бот теггер. Он тегает людей в Ваших групповых чатах.',
         reply_markup=await form_webapp_kbrd(button_data)
     )
+
+
+# @Client.on_message()
+async def test_handler(client, update):
+    """
+    Тестовый хэндлер
+    """
+    print(client)
+    print(update)

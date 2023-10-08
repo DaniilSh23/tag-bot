@@ -5,13 +5,14 @@ from pyrogram import Client
 
 from tag_bot.settings import MY_LOGGER, TG_API_ID, TG_API_HASH, BOT_TOKEN
 
-if __name__ == '__main__':
+
+def start_bot():
     try:
         MY_LOGGER.info('BOT IS READY TO LAUNCH!\nstarting the countdown...')
         MY_LOGGER.info('3... SET PATH TO HANDLERS')
 
         plugins = dict(
-            root="handlers",    # Указываем директорию-корень, где лежат все обработчики
+            root="tgbot.handlers",    # Указываем директорию-корень, где лежат все обработчики
             include=[   # Явно прописываем какие файлы с хэндлерами подключаем
                 "main_handlers",
             ]
@@ -30,3 +31,7 @@ if __name__ == '__main__':
         MY_LOGGER.error(f'BOT CRASHED WITH SOME ERROR\n\t{error}')
     except (KeyboardInterrupt, SystemExit):
         MY_LOGGER.warning('BOT STOPPED BY CTRL+C!')
+
+
+if __name__ == '__main__':
+    start_bot()

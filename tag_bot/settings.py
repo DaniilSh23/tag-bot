@@ -9,13 +9,18 @@ https://docs.djangoproject.com/en/4.2/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/4.2/ref/settings/
 """
+import asyncio
+import os
 
+import uvloop
+from pyrogram import Client
 from pathlib import Path
 import loguru
 import sys
 from pathlib import Path
 import environ
 from celery.schedules import crontab
+
 
 # Это отсюда https://django-environ.readthedocs.io/en/latest/quickstart.html
 env = environ.Env(
@@ -180,6 +185,8 @@ else:
 
 MEDIA_URL = '/media/'  # путь в адресной строке для получения медиа-файлов
 MEDIA_ROOT = BASE_DIR / 'media'  # путь к медиа-файлам на диске
+if not os.path.exists(MEDIA_ROOT):  # если папки media нет, то создаём её
+    os.mkdir(MEDIA_ROOT)
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field
@@ -227,6 +234,8 @@ MY_LOGGER.add(  # системные логи в файл
 BOT_TOKEN = env('BOT_TOKEN')
 TG_API_ID = env('TG_API_ID')
 TG_API_HASH = env('TG_API_HASH')
+LOOP = asyncio.new_event_loop()
+asyncio.set_event_loop(LOOP)
 
 # Настройки для проксирования запросов от Nginx при деплое через докер
 CSRF_TRUSTED_ORIGINS = ['http://0.0.0.0:8000']

@@ -1,0 +1,35 @@
+{% extends 'webapp/base.html' %}
+
+{% block 'title' %}
+    Успех
+{% endblock %}
+
+{% block 'body' %}
+
+    <div class="container-xxl container-p-y">
+      <div class="misc-wrapper">
+        <h2 class="mb-2 mx-2">{{ header }}</h2>
+        <p class="mb-4 mx-2">{{ description }}</p>
+        <a id="ok-button" class="btn btn-primary my-btn-clr">{{ btn_text }}</a>
+        <div class="mt-4">
+          <img
+            src="/static/mytlg/site_donor/assets/img/illustrations/man-with-laptop-light.png"
+            alt="man-with-laptop"
+            width="500"
+            class="img-fluid"
+            data-app-dark-img="illustrations/man-with-laptop-dark.png"
+            data-app-light-img="illustrations/man-with-laptop-light.png"
+          />
+        </div>
+      </div>
+    </div>
+
+    <!-- скрипт для нажатия на кнопку-->
+    <script>
+      var tgObject = window.Telegram.WebApp;
+      const okButton = document.getElementById('ok-button');
+      okButton.addEventListener('click', () => {
+        tgObject.close() // закрываем окно WebApp
+      });
+    </script>
+{% endblock %}
