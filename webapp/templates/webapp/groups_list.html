@@ -1,0 +1,156 @@
+{% extends 'webapp/base.html' %}
+
+{% block 'title' %}
+    Мои группы
+{% endblock %}
+
+{% block 'body' %}
+<div class="row">
+    <h4 class="fw-bold py-3 mb-1"><span class="text-muted fw-light">Мои группы /</span> Список групп</h4>
+
+    <div class="col-xl-6 my-form-border">
+        <div class="card mb-4 my-form-area">
+            <div class="card my-form-area">
+                <h5 class="card-header">Список групповых чатов</h5>
+                <div class="table-responsive text-nowrap">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>Название</th>
+                                <th>В работе</th>
+                            </tr>
+                        </thead>
+                        {% for i_group in groups %}
+                            <tbody class="table-border-bottom-0">
+                                <tr>
+                                    <td>
+                                        <a href="{% url 'webapp:group_detail' group_id=i_group.id%}"><i class="fab fa-angular fa-lg text-danger me-0"></i><strong>{{ i_group.name }}</strong></a>
+                                    </td>
+                                    <td>
+                                        {% if i_group.in_work %}
+                                            <span class="badge bg-label-success me-0">✔️</span>
+                                        {% else %}
+                                            <span class="badge bg-label-danger me-0">✖️</span>
+                                        {% endif %}
+                                    </td>
+                                </tr>
+                            </tbody>
+                        {% empty %}
+                            <div class="divider divider-info divider-dotted">
+                                <div class="divider-text">
+                                    <p class="text-muted mb-0">🤷‍♂️ Пока что групп нет...</p>
+                                </div>
+                            </div>
+                        {% endfor %}
+                    </table>
+                </div>
+              </div>
+        </div>
+    </div>
+
+    <div class="col-xl-6 my-form-border">
+        <div class="card mb-1 my-form-area">
+            <form id="interestsForm" action="{% url 'webapp:sec_pay_step' %}" method="post" enctype="multipart/form-data">
+                {% csrf_token %}
+
+                {% if messages %}
+                    <ul class="messages">
+                        {% for message in messages %}
+                            <li{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
+                        {% endfor %}
+                    </ul>
+                {% endif %}
+
+                <input type="hidden" name="bill_hash" value="{{ bill_hash }}">
+                <div class="row">
+                    <div class="col-12">
+                        <div class="card">
+                            <h5 class="card-header">Подключить новый групповой чат</h5>
+                            <div class="card-body demo-vertical-spacing demo-only-element">
+                                <small class="text-light fw-semibold">Пожалуйста, заполните форму ниже для подключения нового группового чата и нажмите кнопку "Подключить".</small>
+                                <p><small class="text-light fw-semibold"><mark>❗️ Убедитесь, что бот уже добавлен в Ваш чат и имеет все права админа.</mark></small></p>
+
+                                <hr>
+
+                                <div class="mb-3">
+                                    <label class="form-label" for="group_chat_data">
+                                        Данные о групповом чате:
+                                    </label>
+                                    <div class="input-group" id="group_chat_data">
+                                        <input type="text" name="group_name" class="form-control my-filling-fields" placeholder="название группы" aria-label="название группы" required>
+                                        <input type="url" name="group_link" class="form-control my-filling-fields" placeholder="https://t.me/+MyChatHash123" aria-label="ссылка на группу" required>
+                                    </div>
+                                    <div class="form-text">Укажите название группового чата и пригласительную ссылку</div>
+                                </div>
+
+                                <hr>
+
+                                <div class="flex-grow-1 row">
+                                    <div class="col-9 mb-sm-0 mb-0">
+                                        <label class="form-label" for="tag_now">
+                                            Тегать сразу ?
+                                        </label>
+                                    </div>
+                                    <div class="col-3 text-end">
+                                        <div class="form-check form-switch">
+                                            <input name="tag_now" id="tag_now" class="form-check-input float-end" type="checkbox" role="switch" checked>
+                                        </div>
+                                    </div>
+                                    <div class="col-auto form-text">
+                                        Как только новый пользователь вступит в групповой чат, бот отправит отдельное сообщение с упоминанием пользователя и рекламным контентом.<br>Например: @NewUser Вот тебе рекламный контент
+                                    </div>
+                                </div>
+
+                                <hr>
+
+                                <div class="mb-3">
+                                    <label class="form-label" for="main_content">
+                                        Основной контент
+                                    </label>
+                                    <div class="input-group input-group-merge" id="main_content">
+                                        <textarea class="form-control my-filling-fields" aria-label="With textarea" placeholder="Укажите текст сообщения" required></textarea>
+                                    </div>
+                                </div>
+                                <div class="mb-3">
+                                    <input type="file" name="group_chat_file" class="form-control my-filling-fields" aria-describedby="inputGroupFileAddon04" aria-label="Upload" multiple>
+                                    <div class="col-auto form-text">
+                                        Укажите сообщение, которое увидят приглашенные в чат юзеры. Вы также можете выбрать несколько файлов для отправки.
+                                    </div>
+                                </div>
+
+                                <hr>
+
+                                <div class="mb-3">
+                                    <div class="input-group">
+                                        <button class="btn rounded-pill btn-info btn-outline-primary my-btn-clr" type="submit" id="inputFileButton">Подключить</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- скрипт для работы с данными от телеги-->
+<script>
+  var tgObject = window.Telegram.WebApp;
+  tgObject.enableClosingConfirmation()  // предупреждение при закрытии WebApp
+</script>
+
+<!--скрипт для отключения кнопки отправки формы при клике по ней-->
+<script>
+  let inputFileButton = document.getElementById('inputFileButton'); // Берем кнопку
+  let applicationForm = document.getElementById('interestsForm'); // Берем форму
+  let inputFileField = document.getElementById('inputGroupFile04'); // Берем input для файла
+  inputFileButton.addEventListener('click', function() {
+      inputFileButton.setAttribute("disabled", "disabled");     // Отключаем кнопку
+      // inputFileField.setAttribute("type", "hidden");  // Отключаем input для файла
+      inputFileButton.textContent = '⌛️ Отправляю файл...';     // Меняем текст кнопки
+      applicationForm.submit();     // Швыряем форму на бэк
+  });
+</script>
+
+{% endblock %}

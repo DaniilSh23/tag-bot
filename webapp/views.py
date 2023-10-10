@@ -8,6 +8,41 @@ from django.contrib import messages as err_msgs
 from tag_bot.settings import MY_LOGGER, BOT_TOKEN
 from webapp.forms import BalanceForm, SecPayStepForm, CheckPaymentForm
 from webapp.services.balance_services import BalanceServices
+from webapp.services.groups_services import GroupsService
+
+
+class GroupDetailView(View):
+    """
+    Вьюшки для работы с каждой группой детально.
+    """
+    def get(self, request, group_id):
+        return HttpResponse(status=200, content=f'detail group view | {group_id!r}')
+
+
+class GroupsView(View):
+    """
+    Вьюшки для списка групповых чатов
+    """
+    def get(self, request):
+        MY_LOGGER.info(f'GET запрос на вьюшку списка групповых чатов.')
+
+        # Обработка невалидного токена в запросе
+        if request.GET.get('token') != BOT_TOKEN:
+            MY_LOGGER.warning(f'Неверный токен в запросе ! | {request.GET.get("token")!r} != {BOT_TOKEN!r}')
+            return HttpResponse(content='invalid token!', status=400)
+
+        # Обработка невалидного tlg_id
+        tlg_id = request.GET.get("tlg_id")
+        if not tlg_id or not tlg_id.isdigit():
+            MY_LOGGER.warning(f'Отсутствует или невалидный параметр запроса tlg_id, '
+                              f'его значение: {request.GET.get("tlg_id")}')
+            return HttpResponse(content='invalid request params!', status=400)
+
+        status, payload = GroupsService.show_my_groups(tlg_id=tlg_id)
+        if status != 200:
+            return HttpResponse(content=payload, status=status)
+
+        return render(request, template_name='webapp/groups_list.html', context=payload)
 
 
 class BalanceView(View):

@@ -92,3 +92,39 @@ class Transaction(models.Model):
         ordering = ['-id']
         verbose_name = 'транзакция'
         verbose_name_plural = 'транзакции'
+
+
+class GroupChats(models.Model):
+    """
+    Модель для хранения инфы о подключенных групповых чатах.
+    """
+    bot_user = models.ForeignKey(verbose_name='владелец', to=BotUser, on_delete=models.CASCADE)
+    name = models.CharField(verbose_name='название', max_length=100)
+    link = models.URLField(verbose_name='ссылка')
+    group_tlg_id = models.CharField(verbose_name='TG ID чата', max_length=200, blank=True, null=True)
+    msg_text = models.TextField(verbose_name='текст сообщения')
+    tag_now = models.BooleanField(verbose_name='тегать сразу', default=False)
+    bot_rights_checked = models.BooleanField(verbose_name='права бота проверены', default=False)
+    in_work = models.BooleanField(verbose_name='в работе', default=False)
+    paid_by = models.DateTimeField(verbose_name='оплачена до', auto_now_add=False, auto_now=False, blank=True, null=True)
+    created_at = models.DateTimeField(verbose_name='когда создана', auto_now_add=True)
+
+    class Meta:
+        ordering = ['-id']
+        verbose_name = 'групповой чат'
+        verbose_name_plural = 'групповые чаты'
+
+
+class GroupChatFiles(models.Model):
+    """
+    Файлы для групповых чатов
+    """
+    group_chat = models.ForeignKey(verbose_name='групповой чат', to=GroupChats, on_delete=models.CASCADE)
+    file = models.FileField(verbose_name='файл', upload_to='group_chats')
+
+    class Meta:
+        ordering = ['-id']
+        verbose_name = 'файл для гр.чата'
+        verbose_name_plural = 'файлы для гр.чатов'
+
+

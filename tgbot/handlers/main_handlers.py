@@ -23,6 +23,8 @@ async def start_handler(_, update):
     button_data = (
         ('💲 Мой баланс', f"{BASE_HOST}{reverse(viewname='webapp:balance')}"
                          f"?token={BOT_TOKEN}&tlg_id={update.from_user.id}"),
+        ('🗃 Мои группы', f"{BASE_HOST}{reverse(viewname='webapp:groups')}"
+                         f"?token={BOT_TOKEN}&tlg_id={update.from_user.id}"),
     )
     await update.reply_text(
         text=f'👋 Привет!\n\nЭто бот теггер. Он тегает людей в Ваших групповых чатах.',

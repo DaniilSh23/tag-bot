@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from webapp.models import BotUser, BotSettings, PaymentBills, Transaction, Profiles
+from webapp.models import BotUser, BotSettings, PaymentBills, Transaction, Profiles, GroupChats, GroupChatFiles
 
 
 @admin.register(BotSettings)
@@ -98,4 +98,37 @@ class ProfilesAdmin(admin.ModelAdmin):
         'pk',
         'bot_user',
         'balance',
+    )
+
+
+class GroupChatFilesInline(admin.StackedInline):
+    model = GroupChatFiles
+
+
+@admin.register(GroupChats)
+class GroupChatsAdmin(admin.ModelAdmin):
+    inlines = (
+        GroupChatFilesInline,
+    )
+    list_display = (
+        'pk',
+        'bot_user',
+        'link',
+        'group_tlg_id',
+        'tag_now',
+        'bot_rights_checked',
+        'in_work',
+        'paid_by',
+        'created_at',
+    )
+    list_display_links = (
+        'pk',
+        'bot_user',
+        'link',
+        'group_tlg_id',
+        'tag_now',
+        'bot_rights_checked',
+        'in_work',
+        'paid_by',
+        'created_at',
     )
