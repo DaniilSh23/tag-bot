@@ -13,7 +13,7 @@ urlpatterns = [
 
     # Урлы для групповых чатов
     path('groups/', GroupsView.as_view(), name='groups'),
-    path('group_detail/<int:group_id>', GroupDetailView.as_view(), name='group_detail'),
+    path('group_detail/<int:tlg_id>/<int:group_id>', GroupDetailView.as_view(), name='group_detail'),
 ]
 
 # Определяем путь к статике и медиа, когда дебаг включен

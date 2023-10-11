@@ -1,4 +1,11 @@
+import os
+
 from django.db import models
+from django.db.models.signals import pre_delete, pre_save
+from django.dispatch import receiver
+
+from tag_bot import settings
+from tag_bot.settings import MY_LOGGER
 
 
 class BotUser(models.Model):
@@ -73,6 +80,17 @@ class PaymentBills(models.Model):
         verbose_name_plural = 'счета на оплату'
 
 
+@receiver(pre_delete, sender=PaymentBills)
+def delete_group_chat_file(sender, instance, **kwargs):
+    """
+    Функция, которая получает сигнал при удалении модели PaymentBills и удаляет файл
+    """
+    if instance.file:
+        file_path_string = os.path.join(settings.MEDIA_ROOT, instance.file.name)
+        if os.path.exists(file_path_string):
+            os.remove(file_path_string)  # Удаляем файл
+
+
 class Transaction(models.Model):
     """
     Транзакции. Деньги пришли, деньги ушли, когда, сколько и почему.
@@ -121,6 +139,7 @@ class GroupChatFiles(models.Model):
     """
     group_chat = models.ForeignKey(verbose_name='групповой чат', to=GroupChats, on_delete=models.CASCADE)
     file = models.FileField(verbose_name='файл', upload_to='group_chats')
+    file_name = models.CharField(verbose_name='имя', blank=True, null=True)
 
     class Meta:
         ordering = ['-id']
@@ -128,3 +147,22 @@ class GroupChatFiles(models.Model):
         verbose_name_plural = 'файлы для гр.чатов'
 
 
+@receiver(pre_save, sender=GroupChatFiles)
+def generate_group_chat_file_name(sender, instance: GroupChatFiles, **kwargs):
+    """
+    Функция для генерации имени файла
+    """
+    MY_LOGGER.debug(f'Обработка сигнала pre_save от модели GroupChatFiles')
+    instance.file_name = os.path.split(instance.file.name)[-1]
+
+
+@receiver(pre_delete, sender=GroupChatFiles)
+def delete_group_chat_file(sender, instance, **kwargs):
+    """
+    Функция, которая получает сигнал при удалении модели GroupChatFiles и удаляет файл
+    """
+    MY_LOGGER.debug(f'Обработка сигнала pre_delete от модели GroupChatFiles')
+    if instance.file:
+        file_path_string = os.path.join(settings.MEDIA_ROOT, instance.file.name)
+        if os.path.exists(file_path_string):
+            os.remove(file_path_string)  # Удаляем файл

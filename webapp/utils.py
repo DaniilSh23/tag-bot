@@ -1,5 +1,5 @@
 import os
-
+from PIL import Image
 from django.core.files.uploadedfile import UploadedFile
 
 from tag_bot.settings import MEDIA_ROOT, MY_LOGGER, BOT_TOKEN
@@ -62,3 +62,14 @@ def send_message_from_bot(text, disable_notification=True, file_path=None, targe
     MY_LOGGER.success(f'Успешная отправка сообщения {text!r} от лица бота.')
     return True
 
+
+def is_image(file_path: str) -> bool:
+    """
+    Функция для проверки, что файл является изображением
+    """
+    try:
+        img = Image.open(file_path)
+        img.verify()
+        return True
+    except Exception:
+        return False

@@ -1,12 +1,11 @@
-from django.core.files.storage import FileSystemStorage
 from django.http import HttpRequest, HttpResponse, HttpResponseRedirect
 from django.shortcuts import render, redirect
-from django.urls import reverse_lazy
+from django.urls import reverse_lazy, reverse
 from django.views import View
 from django.contrib import messages as err_msgs
 
 from tag_bot.settings import MY_LOGGER, BOT_TOKEN
-from webapp.forms import BalanceForm, SecPayStepForm, CheckPaymentForm
+from webapp.forms import BalanceForm, SecPayStepForm, CheckPaymentForm, MultiplyFileForm, GroupChatForm
 from webapp.services.balance_services import BalanceServices
 from webapp.services.groups_services import GroupsService
 
@@ -15,21 +14,69 @@ class GroupDetailView(View):
     """
     Вьюшки для работы с каждой группой детально.
     """
-    def get(self, request, group_id):
-        return HttpResponse(status=200, content=f'detail group view | {group_id!r}')
+
+    def get(self, request, tlg_id, group_id):
+        MY_LOGGER.info(f'Пришёл GET запрос на вьюшку детальной инфы о группе с PK={group_id}')
+
+        # Проверяем данные запроса
+        if not isinstance(tlg_id, int) or not isinstance(group_id, int):
+            MY_LOGGER.warning(f'Данные запроса не валидны, tlg_id & group_id должны быть int. Запрос: {request.GET}')
+            return HttpResponse(status=400, content='invalid request data!')
+
+        # Вызываем сервис для выполнения бизнес-логики
+        status, payload = GroupsService.show_group_detail(tlg_id=str(tlg_id), group_id=group_id)
+        if status != 200:
+            return HttpResponse(content=payload, status=status)
+        payload['tlg_id'] = tlg_id
+        return render(request, template_name='webapp/groups_detail.html', context=payload)
+
+    def post(self, request, tlg_id, group_id):
+        MY_LOGGER.info(f'POST запрос на вьюшку GroupDetailView для обновления данных о групповом чате {group_id!r}')
+
+        # Проверяем данные запроса
+        if not isinstance(tlg_id, int) or not isinstance(group_id, int):
+            MY_LOGGER.warning(f'Данные запроса не валидны, tlg_id & group_id должны быть int. Запрос: {request.GET}')
+            return HttpResponse(status=400, content='invalid request data!')
+
+        form = GroupChatForm(request.POST)
+        file_form = MultiplyFileForm(request.FILES)
+        if form.is_valid() and file_form.is_valid():
+
+            # Вызываем сервис для бизнес-логики
+            status, payload = GroupsService.update_group_chat(
+                tlg_id=str(tlg_id),
+                group_id=group_id,
+                delete_files_pk=request.POST.getlist("delete_files"),
+                group_name=form.cleaned_data.get("group_name"),
+                tag_now=form.cleaned_data.get("tag_now"),
+                msg_text=form.cleaned_data.get("msg_text"),
+                new_group_chat_files=request.FILES.getlist("group_chat_files"),
+            )
+            if status != 200:
+                return HttpResponse(content=payload, status=status)
+            payload['tlg_id'] = tlg_id
+            return render(request, template_name='webapp/groups_detail.html', context=payload)
+        else:
+            MY_LOGGER.warning(f'Данные форм невалидны. Ошибки form: {form.errors!r} | '
+                              f'Ошибки file_form: {file_form.errors!r} | {request.POST} | {request.FILES}')
+            err_msgs.error(request, f'Ошибка: неверные данные формы | {form.errors!r} | {file_form.errors!r}')
+            return redirect(to=reverse('webapp:group_detail', kwargs={'tlg_id': tlg_id, 'group_id': group_id}))
 
 
 class GroupsView(View):
     """
     Вьюшки для списка групповых чатов
     """
+
     def get(self, request):
         MY_LOGGER.info(f'GET запрос на вьюшку списка групповых чатов.')
 
         # Обработка невалидного токена в запросе
-        if request.GET.get('token') != BOT_TOKEN:
-            MY_LOGGER.warning(f'Неверный токен в запросе ! | {request.GET.get("token")!r} != {BOT_TOKEN!r}')
-            return HttpResponse(content='invalid token!', status=400)
+        # TODO: убрал из-за сложностей навигации с других страниц. Максимум что сможет свинтус - посмотреть
+        #  чьи-то группы.
+        # if request.GET.get('token') != BOT_TOKEN:
+        #     MY_LOGGER.warning(f'Неверный токен в запросе ! | {request.GET.get("token")!r} != {BOT_TOKEN!r}')
+        #     return HttpResponse(content='invalid token!', status=400)
 
         # Обработка невалидного tlg_id
         tlg_id = request.GET.get("tlg_id")
@@ -38,17 +85,23 @@ class GroupsView(View):
                               f'его значение: {request.GET.get("tlg_id")}')
             return HttpResponse(content='invalid request params!', status=400)
 
-        status, payload = GroupsService.show_my_groups(tlg_id=tlg_id)
+        status, payload = GroupsService.show_groups_lst(tlg_id=tlg_id)
         if status != 200:
             return HttpResponse(content=payload, status=status)
-
+        payload['tlg_id'] = tlg_id
         return render(request, template_name='webapp/groups_list.html', context=payload)
+
+    def post(self, request):
+        MY_LOGGER.info(f'POST запрос на вьюшку GroupsView для создания нового группового чата.')
+
+        return HttpResponse(content=request.POST)
 
 
 class BalanceView(View):
     """
     Вьюшки для страницы баланса.
     """
+
     def get(self, request: HttpRequest) -> HttpResponse:
         MY_LOGGER.info(f'Пришёл GET запрос на вьюшку BalanceView | {request.GET}')
 
@@ -124,7 +177,7 @@ def sec_pay_step(request: HttpRequest) -> HttpResponse:
         # Обработка если сервис не выполнил бизнес-логику
         if status != 200:
             status, get_bill_rslt = BalanceServices.get_bill(bill_hash=form.cleaned_data['bill_hash'])
-            if status != 200:   # Обработка на случай если счет не найден в БД
+            if status != 200:  # Обработка на случай если счет не найден в БД
                 return HttpResponse(content=get_bill_rslt, status=status)
             err_msgs.error(request, message=payload)
             return render(request, template_name='webapp/sec_pay_step.html', context=get_bill_rslt)
@@ -148,6 +201,7 @@ class CheckPayment(View):
     """
     Вьюшки для запросов проверки платежей.
     """
+
     def get(self, request):
         MY_LOGGER.info(f'Пришёл GET запрос на вьюшку CheckPayment')
 
@@ -200,4 +254,3 @@ class CheckPayment(View):
         get_bill_rslt['tg_msg_id'] = request.GET.get('tg_msg_id')
         err_msgs.error(request, f'Ошибка: неверные данные формы | {form.errors!r}')
         return render(request, template_name='webapp/check_payment.html', context=get_bill_rslt)
-

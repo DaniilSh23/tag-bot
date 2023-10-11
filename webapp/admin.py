@@ -132,3 +132,20 @@ class GroupChatsAdmin(admin.ModelAdmin):
         'paid_by',
         'created_at',
     )
+
+
+@admin.register(GroupChatFiles)
+class GroupChatFilesAdmin(admin.ModelAdmin):
+    """
+    Регистрируем в админке модель GroupChatFiles
+    """
+    list_display = (
+        'pk',
+        'file_name',
+        'group_chat',
+    )
+    list_display_links = (
+        'pk',
+        'file_name',
+        'group_chat',
+    )

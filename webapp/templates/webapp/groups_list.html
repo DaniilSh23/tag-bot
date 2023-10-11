@@ -24,7 +24,7 @@
                             <tbody class="table-border-bottom-0">
                                 <tr>
                                     <td>
-                                        <a href="{% url 'webapp:group_detail' group_id=i_group.id%}"><i class="fab fa-angular fa-lg text-danger me-0"></i><strong>{{ i_group.name }}</strong></a>
+                                        <a href="{% url 'webapp:group_detail' tlg_id=tlg_id group_id=i_group.id%}"><i class="fab fa-angular fa-lg text-danger me-0"></i><strong>{{ i_group.name }}</strong></a>
                                     </td>
                                     <td>
                                         {% if i_group.in_work %}
@@ -50,7 +50,7 @@
 
     <div class="col-xl-6 my-form-border">
         <div class="card mb-1 my-form-area">
-            <form id="interestsForm" action="{% url 'webapp:sec_pay_step' %}" method="post" enctype="multipart/form-data">
+            <form id="interestsForm" action="{% url 'webapp:groups' %}" method="post" enctype="multipart/form-data">
                 {% csrf_token %}
 
                 {% if messages %}
@@ -61,7 +61,6 @@
                     </ul>
                 {% endif %}
 
-                <input type="hidden" name="bill_hash" value="{{ bill_hash }}">
                 <div class="row">
                     <div class="col-12">
                         <div class="card">
