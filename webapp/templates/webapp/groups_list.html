@@ -52,6 +52,7 @@
         <div class="card mb-1 my-form-area">
             <form id="interestsForm" action="{% url 'webapp:groups' %}" method="post" enctype="multipart/form-data">
                 {% csrf_token %}
+                <input class="my-filling-fields" type="text" id="tg-id-input" value="" name="tlg_id">
 
                 {% if messages %}
                     <ul class="messages">
@@ -77,9 +78,9 @@
                                     </label>
                                     <div class="input-group" id="group_chat_data">
                                         <input type="text" name="group_name" class="form-control my-filling-fields" placeholder="название группы" aria-label="название группы" required>
-                                        <input type="url" name="group_link" class="form-control my-filling-fields" placeholder="https://t.me/+MyChatHash123" aria-label="ссылка на группу" required>
+                                        <input type="text" name="group_tg_id" class="form-control my-filling-fields" placeholder="-1001234567890" aria-label="ссылка на группу" required>
                                     </div>
-                                    <div class="form-text">Укажите название группового чата и пригласительную ссылку</div>
+                                    <div class="form-text">Укажите название группового чата и его ID. Для получения ID перешлите боту любое сообщение из чата.</div>
                                 </div>
 
                                 <hr>
@@ -107,11 +108,11 @@
                                         Основной контент
                                     </label>
                                     <div class="input-group input-group-merge" id="main_content">
-                                        <textarea class="form-control my-filling-fields" aria-label="With textarea" placeholder="Укажите текст сообщения" required></textarea>
+                                        <textarea name="msg_text" class="form-control my-filling-fields" aria-label="With textarea" placeholder="Укажите текст сообщения" required></textarea>
                                     </div>
                                 </div>
                                 <div class="mb-3">
-                                    <input type="file" name="group_chat_file" class="form-control my-filling-fields" aria-describedby="inputGroupFileAddon04" aria-label="Upload" multiple>
+                                    <input type="file" name="group_chat_files" class="form-control my-filling-fields" aria-describedby="inputGroupFileAddon04" aria-label="Upload" multiple>
                                     <div class="col-auto form-text">
                                         Укажите сообщение, которое увидят приглашенные в чат юзеры. Вы также можете выбрать несколько файлов для отправки.
                                     </div>

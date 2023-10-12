@@ -118,8 +118,8 @@ class GroupChats(models.Model):
     """
     bot_user = models.ForeignKey(verbose_name='владелец', to=BotUser, on_delete=models.CASCADE)
     name = models.CharField(verbose_name='название', max_length=100)
-    link = models.URLField(verbose_name='ссылка')
-    group_tlg_id = models.CharField(verbose_name='TG ID чата', max_length=200, blank=True, null=True)
+    link = models.URLField(verbose_name='ссылка', blank=True, null=True)
+    group_tg_id = models.CharField(verbose_name='TG ID чата', max_length=200, blank=True, null=True)
     msg_text = models.TextField(verbose_name='текст сообщения')
     tag_now = models.BooleanField(verbose_name='тегать сразу', default=False)
     bot_rights_checked = models.BooleanField(verbose_name='права бота проверены', default=False)

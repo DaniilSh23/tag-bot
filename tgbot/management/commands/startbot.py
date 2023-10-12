@@ -23,6 +23,7 @@ class Command(BaseCommand):
                 include=[  # Явно прописываем какие файлы с хэндлерами подключаем
                     "main_handlers",
                     "payment_handlers",
+                    "group_chat_handlers",
                 ]
             )  # Путь пакета с обработчиками
 

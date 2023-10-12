@@ -1,5 +1,6 @@
 import hashlib
 import time
+from typing import Tuple
 
 from django.core.exceptions import ObjectDoesNotExist
 from django.core.files.uploadedfile import UploadedFile
@@ -186,3 +187,47 @@ class BalanceServices:
                            f'Ваш комментарий отправлен пользователю с TG ID {bill_obj.bot_user.tlg_id}',
             'btn_text': 'Ок. Понял.'
         }
+
+    @staticmethod
+    def check_user_balance(tlg_id: str, groups_numb=1) -> bool:
+        """
+        Метод для проверки, что баланс пользователя позволяет ему оформить группу на следующие сутки
+        """
+        MY_LOGGER.debug(f'Запущен сервис BalanceServices.check_user_balance с параметрами: '
+                        f'tlg_id == {tlg_id}, groups_numb == {groups_numb}')
+
+        user_balance = float(Profiles.objects.get(bot_user__tlg_id=tlg_id).balance)
+        tariff = float(BotSettings.objects.get(key='tariff').value)
+
+        # Проверяем, что баланс юзера позволяет оплатить группы
+        if user_balance >= tariff * groups_numb:
+            return True
+        return False
+
+    @staticmethod
+    def writing_off_money(tlg_id: str, groups_numb: int = 1):
+        """
+        Метод для списания денежных средств с баланса пользователя за обслуживание групповых чатов.
+        """
+        MY_LOGGER.debug(f'Запущен сервис BalanceServices.writing_off_money с параметрами: '
+                        f'tlg_id == {tlg_id}, groups_numb == {groups_numb}')
+
+        user_profile = Profiles.objects.get(bot_user__tlg_id=tlg_id)
+        tariff = float(BotSettings.objects.get(key='tariff').value)
+        pay_amount = tariff * groups_numb
+
+        with transaction.atomic():
+
+            # Списываем деньги
+            user_profile.balance = float(user_profile.balance) - pay_amount
+            user_profile.save()
+
+            # Записываем операцию в транзакцию
+            Transaction.objects.create(
+                bot_user=user_profile.bot_user,
+                amount=pay_amount,
+                operation_type='writing_off',
+                description=f'Суточная плата за обслуживание групп в кол-ве {groups_numb!r}',
+            )
+
+

@@ -113,8 +113,7 @@ class GroupChatsAdmin(admin.ModelAdmin):
     list_display = (
         'pk',
         'bot_user',
-        'link',
-        'group_tlg_id',
+        'group_tg_id',
         'tag_now',
         'bot_rights_checked',
         'in_work',
@@ -124,8 +123,7 @@ class GroupChatsAdmin(admin.ModelAdmin):
     list_display_links = (
         'pk',
         'bot_user',
-        'link',
-        'group_tlg_id',
+        'group_tg_id',
         'tag_now',
         'bot_rights_checked',
         'in_work',

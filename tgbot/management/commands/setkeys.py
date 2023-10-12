@@ -10,6 +10,7 @@ class Command(BaseCommand):
 
         bot_settings = (
             ('to_card_pay_data', 'Какие-либо данные для перевода на карту, такие как номер, получатель и т.д.'),
+            ('tariff', '20'),
             ('who_approve_payments', '1978587604'),
         )
         for i_bot_sett in bot_settings:

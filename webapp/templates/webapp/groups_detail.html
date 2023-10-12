@@ -45,7 +45,7 @@
                                     <div class="input-group" id="group_chat_data">
                                         <input type="hidden" name="group_id" value="{{ group_chat.id }}">
                                         <input type="text" value="{{ group_chat.name }}" name="group_name" class="form-control my-filling-fields" placeholder="название группы" aria-label="название группы" required>
-                                        <input type="url" value="{{ group_chat.link }}" name="group_link" class="form-control my-filling-fields" placeholder="https://t.me/+MyChatHash123" aria-label="ссылка на группу" readonly>
+                                        <input type="text" value="{{ group_chat.group_tg_id }}" name="group_tg_id" class="form-control my-filling-fields" placeholder="https://t.me/+MyChatHash123" aria-label="ссылка на группу" readonly>
                                     </div>
                                 </div>
 
@@ -113,7 +113,7 @@
 <!--                                    <div class="input-group">-->
                                     <div class="demo-inline-spacing">
                                         <button class="btn rounded-pill btn-info btn-outline-primary my-btn-clr" type="submit" id="saveChangesButton">Сохранить изменения</button>
-                                        <button class="btn rounded-pill btn-info btn-outline-danger my-btn-clr" type="submit" id="deleteButton">Удалить</button>
+                                        <a href="{% url 'webapp:group_delete' tlg_id=tlg_id group_id=group_chat.id %}" class="btn rounded-pill btn-info btn-outline-danger my-btn-clr" type="button" id="deleteButton">Удалить</a>
                                     </div>
                                 </div>
                             </div>

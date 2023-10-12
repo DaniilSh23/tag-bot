@@ -3,9 +3,11 @@ from django.shortcuts import render, redirect
 from django.urls import reverse_lazy, reverse
 from django.views import View
 from django.contrib import messages as err_msgs
+from django.views.generic import DeleteView
 
 from tag_bot.settings import MY_LOGGER, BOT_TOKEN
 from webapp.forms import BalanceForm, SecPayStepForm, CheckPaymentForm, MultiplyFileForm, GroupChatForm
+from webapp.models import GroupChats
 from webapp.services.balance_services import BalanceServices
 from webapp.services.groups_services import GroupsService
 
@@ -94,7 +96,46 @@ class GroupsView(View):
     def post(self, request):
         MY_LOGGER.info(f'POST запрос на вьюшку GroupsView для создания нового группового чата.')
 
-        return HttpResponse(content=request.POST)
+        form = GroupChatForm(request.POST)
+        file_form = MultiplyFileForm(request.FILES)
+        if form.is_valid() and file_form.is_valid():
+
+            # Вызываем сервис для бизнес-логики
+            status, payload = GroupsService.create_group_chat(
+                tlg_id=request.POST.get("tlg_id"),
+                group_name=form.cleaned_data.get("group_name"),
+                group_tg_id=form.cleaned_data.get("group_tg_id"),
+                tag_now=form.cleaned_data.get("tag_now"),
+                msg_text=form.cleaned_data.get("msg_text"),
+                new_group_chat_files=request.FILES.getlist("group_chat_files"),
+            )
+            if status != 200:
+                return HttpResponse(content=payload, status=status)
+            payload['tlg_id'] = request.POST.get("tlg_id")
+            return render(request, template_name='webapp/groups_detail.html', context=payload)
+        else:
+            MY_LOGGER.warning(f'Данные форм невалидны. Ошибки form: {form.errors!r} | '
+                              f'Ошибки file_form: {file_form.errors!r} | {request.POST} | {request.FILES}')
+            err_msgs.error(request, f'Ошибка: неверные данные формы | {form.errors!r} | {file_form.errors!r}')
+            return redirect(to=f"{reverse('webapp:groups')}?tlg_id={request.POST.get('tlg_id')}")
+
+
+class GroupChatDeleteView(View):
+    """
+    Вьюшка для удаления записи о групповом чате
+    """
+    def get(self, request, tlg_id, group_id):
+        """
+        Обработка GET запроса для удаления группового чата.
+        """
+        MY_LOGGER.info(f'Пришёл GET запрос на вьюшку удаления группового чата')
+
+        # Вызов сервиса для удаления
+        status, payload = GroupsService.delete_group_chat(tlg_id=str(tlg_id), group_id=group_id)
+        if status != 200:
+            return HttpResponse(content=payload, status=status)
+
+        return redirect(to=f"{reverse('webapp:groups')}?tlg_id={tlg_id}")
 
 
 class BalanceView(View):

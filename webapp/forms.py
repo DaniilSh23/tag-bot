@@ -36,7 +36,7 @@ class GroupChatForm(forms.Form):
     Форма для групповых чатов
     """
     group_name = forms.CharField(max_length=100)
-    group_link = forms.URLField()
+    group_tg_id = forms.CharField()
     tag_now = forms.BooleanField(
         required=False,
         widget=forms.CheckboxInput(

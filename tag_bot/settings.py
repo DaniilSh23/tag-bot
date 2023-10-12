@@ -205,11 +205,13 @@ CELERY_BEAT_SCHEDULE = {  # Настройки шедуля
         'task': 'webapp.tasks.close_expired_bills',
         'schedule': 60 * 5,
     },
-    # Примеры ниже
-    'test_by_sec': {
-        'task': 'webapp.tasks.scheduled_task_example',
-        'schedule': 3600,
+    # Проверка подписок
+    'check_subs': {
+        'task': 'webapp.tasks.check_subs',
+        # 'schedule': 60 * 60,
+        'schedule': 5,
     },
+    # Примеры ниже
     'test_by_crontab': {
         'task': 'webapp.tasks.scheduled_task_example',
         'schedule': crontab(hour=11, minute=30, day_of_week=1),  # Запуск в понедельник в 11:30
