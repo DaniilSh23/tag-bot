@@ -2,7 +2,7 @@
 
 # Move to project directory
 # shellcheck disable=SC2164
-cd /cfu_mytlg_admin
+cd /tag_bot
 
 # Collect static files
 echo "Collect static files"
@@ -28,6 +28,10 @@ python manage.py setkeys
 # Start celery
 echo "Starting celery"
 celery -A cfu_mytlg_admin worker -l INFO -B &
+
+# Start bot
+echo "Starting bot"
+python manage.py startbot &
 
 # Start server through gunicorn
 echo "Starting server through gunicorn"

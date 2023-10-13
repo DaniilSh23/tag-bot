@@ -1,6 +1,6 @@
 FROM python:3.10-slim
 
-RUN mkdir "cfu_mytlg_admin"
+RUN mkdir "tag_bot"
 
 COPY requirements.txt /cfu_mytlg_admin/
 
@@ -14,9 +14,9 @@ RUN pip install psycopg2-binary
 
 RUN python -m pip install --no-cache-dir -r /cfu_mytlg_admin/requirements.txt
 
-COPY . /cfu_mytlg_admin/
+COPY . /tag_bot/
 
-WORKDIR /cfu_mytlg_admin
+WORKDIR /tag_bot
 
 # Ниже команды для создания суперпользователя в Django
 ENV DJANGO_SUPERUSER_USERNAME=admin
