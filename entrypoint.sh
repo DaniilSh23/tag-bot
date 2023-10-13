@@ -27,7 +27,7 @@ python manage.py setkeys
 
 # Start celery
 echo "Starting celery"
-celery -A cfu_mytlg_admin worker -l INFO -B &
+celery -A tag_bot worker -l INFO -B &
 
 # Start bot
 echo "Starting bot"
@@ -35,4 +35,4 @@ python manage.py startbot &
 
 # Start server through gunicorn
 echo "Starting server through gunicorn"
-gunicorn --bind 0.0.0.0:8000 cfu_mytlg_admin.wsgi:application
+gunicorn --bind 0.0.0.0:8000 tag_bot.wsgi:application

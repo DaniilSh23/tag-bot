@@ -27,11 +27,11 @@ services:
       DJANGO_SUPERUSER_USERNAME: ${DJANGO_SUPERUSER_USERNAME}
       DJANGO_SUPERUSER_PASSWORD: ${DJANGO_SUPERUSER_PASSWORD}
       DJANGO_SUPERUSER_EMAIL: ${DJANGO_SUPERUSER_EMAIL}
-    entrypoint: ["/cfu_mytlg_admin/entrypoint.sh"]
+    entrypoint: ["/tag_bot/entrypoint.sh"]
     ports:
       - "8000:8000" # Связываем 8000 порт хоста с 8000 портом контейнера в приложением Django
     volumes: # Устанавливаем место для хранилища файлов
-      - ${DJANGO_VOLUME_PATH}:/cfu_mytlg_admin # Связываем текущую директорию с папкой проекта в контейнере
+      - ${DJANGO_VOLUME_PATH}:/tag_bot # Связываем текущую директорию с папкой проекта в контейнере
     depends_on: # Указываем, что этот контейнер должен запуститься после контейнеров db, redis
       - my_db
       - my_redis

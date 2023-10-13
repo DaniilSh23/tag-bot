@@ -2,7 +2,7 @@ FROM python:3.10-slim
 
 RUN mkdir "tag_bot"
 
-COPY requirements.txt /cfu_mytlg_admin/
+COPY requirements.txt /tag_bot/
 
 RUN apt update
 
@@ -12,7 +12,7 @@ RUN apt-get install build-essential -y
 
 RUN pip install psycopg2-binary
 
-RUN python -m pip install --no-cache-dir -r /cfu_mytlg_admin/requirements.txt
+RUN python -m pip install --no-cache-dir -r /tag_bot/requirements.txt
 
 COPY . /tag_bot/
 
@@ -27,4 +27,4 @@ ENV DJANGO_SUPERUSER_EMAIL=my@dmin.com
 EXPOSE 8000
 
 # Запуск
-ENTRYPOINT ["/cfu_mytlg_admin/entrypoint.sh"]
+ENTRYPOINT ["/tag_bot/entrypoint.sh"]
