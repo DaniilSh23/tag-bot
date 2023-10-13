@@ -7,9 +7,30 @@ from django.views.generic import DeleteView
 
 from tag_bot.settings import MY_LOGGER, BOT_TOKEN
 from webapp.forms import BalanceForm, SecPayStepForm, CheckPaymentForm, MultiplyFileForm, GroupChatForm
-from webapp.models import GroupChats
 from webapp.services.balance_services import BalanceServices
 from webapp.services.groups_services import GroupsService
+
+
+class TagAllView(View):
+    """
+    Вьюшка для функции тегнуть всех
+    """
+    def get(self, request, tlg_id, group_id):
+        MY_LOGGER.info(f'Пришел GET запрос на вьюшку для тега всех | tlg_id={tlg_id}, group_id={group_id}')
+
+        context = dict(tlg_id=tlg_id)
+        # Вызов сервиса для бизнес-логики
+        msg_type, msg = GroupsService.tag_all(group_id=group_id)
+        context[msg_type] = msg
+
+        # Вызов сервиса для получения детальной инфы о групповом чате
+        status, payload = GroupsService.show_group_detail(group_id=group_id, tlg_id=tlg_id)
+        if status != 200:
+            return HttpResponse(content=payload, status=status)
+
+        # Объединяем два словаря и рендерим страницу с деталями о групповом чате
+        context = context | payload
+        return render(request, template_name='webapp/groups_detail.html', context=context)
 
 
 class GroupDetailView(View):

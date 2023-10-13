@@ -7,12 +7,26 @@ from django.db import transaction
 from tag_bot.settings import MY_LOGGER
 from webapp.models import GroupChats, BotUser, GroupChatFiles
 from webapp.services.balance_services import BalanceServices
+from webapp.utils import send_message_from_bot
 
 
 class GroupsService:
     """
     Сервис для групповых чатов.
     """
+
+    @staticmethod
+    def tag_all(group_id):
+        """
+        Метод для функционала "тегнуть всех".
+        """
+        MY_LOGGER.debug(f'Вызван сервис GroupsService.tag_all с параметрами | group_id={group_id}')
+
+        # Отправляем боту команду, чтобы он тегнул всех в нужном групповом чате
+        send_rslt = send_message_from_bot(text=f'$$$tag_all {group_id}')
+        if not send_rslt:
+            return 'err_tag_all', '🙅‍♂️ Не удалось тегнуть всех!'
+        return 'success_tag_all', '👌 Ок! Бот начинает тегать всех.'
 
     @staticmethod
     def show_groups_lst(tlg_id):

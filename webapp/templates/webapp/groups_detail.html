@@ -21,8 +21,16 @@
                     </ul>
                 {% endif %}
 
+<!--                Инфо рамка об обновлении записи-->
                 {% if update_rslt %}
                     <div class="alert alert-success" role="alert">{{ update_rslt }}</div>
+                {% endif %}
+
+<!--                Инфо рамка о результате нажатия на кнопку "тегнуть всех" -->
+                {% if err_tag_all %}
+                    <div class="alert alert-danger" role="alert">{{ err_tag_all }}</div>
+                {% elif success_tag_all %}
+                    <div class="alert alert-success" role="alert">{{ success_tag_all }}</div>
                 {% endif %}
 
                 <div class="row">
@@ -73,7 +81,7 @@
                                         </label>
                                     </div>
                                     <div class="col-3 text-end mb-0 mt-2">
-                                        <a href="" type="button" class="btn btn-sm btn-outline-warning">
+                                        <a href="{% url 'webapp:tag_all' tlg_id=tlg_id group_id=group_chat.id %}" type="button" class="btn btn-sm btn-outline-warning">
                                             <i class="tf-icons bx bx-rocket"></i>
                                         </a>
                                     </div>

@@ -39,5 +39,5 @@ async def test_handler(client, update):
     """
     Тестовый хэндлер
     """
-    print(client)
+    # print(client)
     print(update)

@@ -1,7 +1,8 @@
 from django.urls import path
 from django.conf.urls.static import static
 from tag_bot import settings
-from webapp.views import BalanceView, sec_pay_step, CheckPayment, GroupsView, GroupDetailView, GroupChatDeleteView
+from webapp.views import BalanceView, sec_pay_step, CheckPayment, GroupsView, GroupDetailView, GroupChatDeleteView, \
+    TagAllView
 
 app_name = 'webapp'
 
@@ -15,6 +16,7 @@ urlpatterns = [
     path('groups/', GroupsView.as_view(), name='groups'),
     path('group_detail/<int:tlg_id>/<int:group_id>', GroupDetailView.as_view(), name='group_detail'),
     path('group_delete/<int:tlg_id>/<int:group_id>', GroupChatDeleteView.as_view(), name='group_delete'),
+    path('tag_all/<int:tlg_id>/<int:group_id>', TagAllView.as_view(), name='tag_all'),
 ]
 
 # Определяем путь к статике и медиа, когда дебаг включен
