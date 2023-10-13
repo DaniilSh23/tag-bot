@@ -208,8 +208,8 @@ CELERY_BEAT_SCHEDULE = {  # Настройки шедуля
     # Проверка подписок
     'check_subs': {
         'task': 'webapp.tasks.check_subs',
-        # 'schedule': 60 * 60,
-        'schedule': 5,
+        'schedule': 60 * 60,
+        # 'schedule': 5,
     },
     # Примеры ниже
     'test_by_crontab': {
