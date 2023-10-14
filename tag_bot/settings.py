@@ -269,6 +269,10 @@ if SHOW_SQL_LOG:
         },
     }
 
+# Настройки размера загружаемых файлов
+DATA_UPLOAD_MAX_MEMORY_SIZE = 104857600  # 100 MB
+DATA_UPLOAD_MAX_FILE_SIZE = 104857600  # 100 MB
+
 # Настройка sentry для отлова ошибок
 import sentry_sdk
 from sentry_sdk.integrations.django import DjangoIntegration
