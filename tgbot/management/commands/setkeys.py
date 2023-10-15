@@ -14,9 +14,11 @@ class Command(BaseCommand):
             ('who_approve_payments', '1978587604'),
         )
         for i_bot_sett in bot_settings:
-            obj, created = BotSettings.objects.update_or_create(
+            obj, created = BotSettings.objects.get_or_create(
                 key=i_bot_sett[0],
-                value=i_bot_sett[1],
+                defaults={
+                    "value": i_bot_sett[1],
+                }
             )
             MY_LOGGER.success(f'Настройка {obj.key!r} {"создана" if created else "обновлена"} '
                               f'в БД со значением {obj.value[:48]!r}...')
