@@ -2,7 +2,7 @@ from django.urls import path
 from django.conf.urls.static import static
 from tag_bot import settings
 from webapp.views import BalanceView, sec_pay_step, CheckPayment, GroupsView, GroupDetailView, GroupChatDeleteView, \
-    TagAllView
+    TagAllView, SupportView
 
 app_name = 'webapp'
 
@@ -17,6 +17,9 @@ urlpatterns = [
     path('group_detail/<int:tlg_id>/<int:group_id>', GroupDetailView.as_view(), name='group_detail'),
     path('group_delete/<int:tlg_id>/<int:group_id>', GroupChatDeleteView.as_view(), name='group_delete'),
     path('tag_all/<int:tlg_id>/<int:group_id>', TagAllView.as_view(), name='tag_all'),
+
+    # Общие урлы
+    path('support/', SupportView.as_view(), name='support'),
 ]
 
 # Определяем путь к статике и медиа, когда дебаг включен

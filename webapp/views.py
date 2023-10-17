@@ -8,7 +8,30 @@ from django.views.generic import DeleteView
 from tag_bot.settings import MY_LOGGER, BOT_TOKEN
 from webapp.forms import BalanceForm, SecPayStepForm, CheckPaymentForm, MultiplyFileForm, GroupChatForm
 from webapp.services.balance_services import BalanceServices
+from webapp.services.common_services import FAQandSupportService
 from webapp.services.groups_services import GroupsService
+
+
+class SupportView(View):
+    """
+    Вьюшка для страницы поддержки и FAQ
+    """
+    def get(self, request):
+        MY_LOGGER.info(f'Получен GET запрос на вьюшку поддержки и FAQ')
+
+        # Достаём контекст для поддержки
+        support_context = FAQandSupportService.make_support_context()
+        if not support_context:
+            MY_LOGGER.warning('Не определены данные для контекста поддержки')
+            return HttpResponse(content='Не определены данные для контекста поддержки', status=400)
+
+        # Достаём контекст для FAQ
+        faq_context = FAQandSupportService.make_faq_context()
+        if not faq_context:
+            MY_LOGGER.warning('Не определены данные для контекста FAQ')
+            return HttpResponse(content='Не определены данные для контекста FAQ', status=400)
+        print(support_context | faq_context)
+        return render(request, template_name='webapp/support_faq.html', context=support_context | faq_context)
 
 
 class TagAllView(View):

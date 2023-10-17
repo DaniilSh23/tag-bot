@@ -1,0 +1,51 @@
+{% extends 'webapp/base.html' %}
+
+{% block 'title' %}
+    Поддержка / FAQ
+{% endblock %}
+
+{% block 'body' %}
+<div class="row">
+    <h4 class="fw-bold py-3 mb-1"><span class="text-muted fw-light">Главная /</span> Поддержка & FAQ</h4>
+
+    <div class="col-xl-6 my-form-border">
+        <div class="card mb-4 my-form-area">
+
+            <div class="card-body">
+            <div class="row">
+
+            <div class="col-lg-6">
+                <small class="text-light fw-semibold">Выберите раздел</small>
+                <div class="demo-inline-spacing mt-3">
+                    <div class="list-group list-group-horizontal-md text-md-center">
+                        <a class="list-group-item list-group-item-action active" id="home-list-item" data-bs-toggle="list" href="#horizontal-home">Поддержка</a>
+                        <a class="list-group-item list-group-item-action" id="profile-list-item" data-bs-toggle="list" href="#horizontal-profile">FAQ</a>
+                    </div>
+                    <div class="tab-content px-0 mt-0">
+                        <div class="tab-pane fade active show" id="horizontal-home">
+                            <p class="lead mb-0">
+                                {{ support_text }}
+                            </p>
+                            <p class="mb-0 mt-3">
+                                <a href="{{ support_link }}" type="button" class="btn btn-outline-secondary my-btn-clr">
+                                    <i class="menu-icon tf-icons bx bx-support"></i>Написать в поддержку
+                                </a>
+                            </p>
+                        </div>
+                        <div class="tab-pane fade" id="horizontal-profile">
+                            <p class="lead mb-0">
+                                {{ faq_info }}
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+{% endblock %}

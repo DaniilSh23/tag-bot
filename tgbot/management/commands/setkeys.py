@@ -12,6 +12,9 @@ class Command(BaseCommand):
             ('to_card_pay_data', 'Какие-либо данные для перевода на карту, такие как номер, получатель и т.д.'),
             ('tariff', '20'),
             ('who_approve_payments', '1978587604'),
+            ('faq_info', 'Какой-то текст для FAQ'),
+            ('support_link', 'https://t.me/ygr_supp'),
+            ('support_text', 'Какой-то текст для раздела поддержки'),
         )
         for i_bot_sett in bot_settings:
             obj, created = BotSettings.objects.get_or_create(
