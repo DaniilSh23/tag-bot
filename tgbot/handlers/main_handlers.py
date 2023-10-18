@@ -35,11 +35,3 @@ async def start_handler(_, update):
         reply_markup=await form_webapp_kbrd(button_data)
     )
 
-
-# @Client.on_message()
-async def test_handler(client, update):
-    """
-    Тестовый хэндлер
-    """
-    # print(client)
-    print(update)

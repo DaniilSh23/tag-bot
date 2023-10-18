@@ -1,12 +1,47 @@
 from django.urls import reverse
 from pyrogram import Client, filters
+from pyrogram.raw.types import UpdateChannelParticipant
 from pyrogram.types import Message
 
-from tag_bot.settings import MY_LOGGER, BASE_HOST, BOT_TOKEN
+from tag_bot.settings import MY_LOGGER
 from tgbot.db_work import get_group_detail
-from tgbot.filters.group_chat_filters import get_cmnd_for_check_perm_filter, tag_all_filter, filter_by_group_id
-from tgbot.keyboards.bot_keyboards import form_webapp_kbrd
+from tgbot.filters.group_chat_filters import tag_all_filter, filter_by_group_id, \
+    func_filter_invite_user_in_group
 from tgbot.utils.client_actions import send_tag_msg
+
+
+@Client.on_raw_update(filters.group)
+async def tag_now_by_invite_handler(client, update: UpdateChannelParticipant, raw_users, raw_channel):
+    """
+    Хэндлер для тега сразу пользователей, которые были приглашены в чат.
+    """
+
+    # Фильтруем апдейт и отсеиваем, если он не пройдет фильтр
+    filter_rslt = await func_filter_invite_user_in_group(update=update)
+    if not filter_rslt:
+        return
+
+    MY_LOGGER.info(f'Получен апдейт для тега сразу юзера, который был приглашен в чат.')
+    bot_usr = await client.get_users(user_ids=update.user_id)
+
+    # Достаём инфу о чате для тега
+    group_chat = await get_group_detail(group_tg_id=f"-100{update.channel_id}")
+    if not group_chat:
+        MY_LOGGER.warning(f'Тег нового юзера в чате выполнен не будет. Чат с TG ID == f"-100{update.channel_id}"'
+                          f' не найден в БД')
+        return
+    elif not bot_usr.username:
+        MY_LOGGER.warning(f'Тег нового юзера в чате выполнен не будет. У юзера отсутствует username | '
+                          f'его TG ID == {bot_usr.id}')
+        return
+
+    # Тегаем юзера в этом чате с рекламным текстом и файлами
+    msg_text = f"@{bot_usr.username}\n\n{group_chat.get('msg_text')}"
+    await send_tag_msg(
+        client=client,
+        group_chat=group_chat,
+        msg_text=msg_text,
+    )
 
 
 @Client.on_message(filters.new_chat_members & filter_by_group_id)
