@@ -1,6 +1,6 @@
 from django.urls import reverse
 from pyrogram import Client, filters
-from pyrogram.raw.types import UpdateChannelParticipant
+from pyrogram.raw.types import UpdateChannelParticipant, UpdateChatParticipant
 from pyrogram.types import Message
 
 from tag_bot.settings import MY_LOGGER
@@ -70,7 +70,8 @@ async def tag_all_handler(client: Client, update: Message):
 
 
 @Client.on_raw_update(filters.group)
-async def tag_now_by_invite_handler(client, update: UpdateChannelParticipant, raw_users, raw_channel):
+async def tag_now_by_invite_handler(client, update: UpdateChannelParticipant | UpdateChatParticipant, raw_users,
+                                    raw_channel):
     """
     Хэндлер для тега сразу пользователей, которые были приглашены в чат.
     """
@@ -85,7 +86,8 @@ async def tag_now_by_invite_handler(client, update: UpdateChannelParticipant, ra
     bot_usr = await client.get_users(user_ids=update.user_id)
 
     # Достаём инфу о чате для тега
-    group_chat = await get_group_detail(group_tg_id=f"-100{update.channel_id}")
+    chat_id = f"-100{update.channel_id}" if isinstance(update, UpdateChannelParticipant) else f"-{update.chat_id}"
+    group_chat = await get_group_detail(group_tg_id=chat_id)
     if not group_chat:
         MY_LOGGER.warning(f'Тег нового юзера в чате выполнен не будет. Чат с TG ID == f"-100{update.channel_id}"'
                           f' не найден в БД')
