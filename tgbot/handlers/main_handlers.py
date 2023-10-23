@@ -36,14 +36,14 @@ async def start_handler(_, update):
     )
 
     # Получаем ID админа бота, и если стартовал он, то отдаем данные для входа в админку
-    admin_id = await get_bot_settings(key='who_approve_payments')[0]
-    if int(admin_id) == int(update.from_user.id):
+    admin_id = await get_bot_settings(key='who_approve_payments')
+    if int(admin_id[0]) == int(update.from_user.id):
         button_data = (
             ('🎛 Админ-панель', f"{BASE_HOST}/admin"),
         )
         await update.reply_text(
-            text=f'<b>Данные для админки:</b>\n\nLOGIN=<code>{DJANGO_SUPERUSER_USERNAME}</code>\n'
-                 f'PASSWD=<code>{DJANGO_SUPERUSER_PASSWORD}</code>',
+            text=f'<b>Данные для админки:</b>\n\nLOGIN:\t<code>{DJANGO_SUPERUSER_USERNAME}</code>\n'
+                 f'PASSWD\t<code>{DJANGO_SUPERUSER_PASSWORD}</code>',
             reply_markup=await form_webapp_kbrd(button_data)
         )
 
