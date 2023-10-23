@@ -34,23 +34,23 @@ async def func_filter_invite_user_in_group(update: UpdateChannelParticipant | Up
     Функция для фильтрации сырых апдейтов из групповых чатов.
     Работает для хэндлера, который отслеживает события инвайта новых юзеров.
     """
-
     # Проверяем, что пришёл подходящий апдейт
     if isinstance(update, UpdateChannelParticipant) or isinstance(update, UpdateChatParticipant):
 
         # Проверяем, что апдейт пришёл из подключенной группы
         groups_ids = await get_group_ids_with_tag_now()
         clear_group_ids = list()
+
         for i_group_id in groups_ids:
 
             # Форматируем ID, убираем пайрограмовские -100 и просто минус для обычных групп
             i_group_id = i_group_id.replace('-100', '') if i_group_id.startswith('-100') else i_group_id.replace('-', '')
             clear_group_ids.append(i_group_id)
 
-            # Проверяем, что в списке групп есть ID апдейта
-            chat_id = update.channel_id if isinstance(update, UpdateChannelParticipant) else update.chat_id
-            if str(chat_id) not in clear_group_ids:
-                return False
+        # Проверяем, что в списке групп есть ID апдейта
+        chat_id = update.channel_id if isinstance(update, UpdateChannelParticipant) else update.chat_id
+        if str(chat_id) not in clear_group_ids:
+            return False
         return True
 
     # Пришёл неподходящий апдейт
