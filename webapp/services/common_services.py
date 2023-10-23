@@ -9,6 +9,21 @@ class FAQandSupportService:
     Сервис для поддержки и FAQ.
     """
     @staticmethod
+    def make_reviews_context():
+        """
+        Метод для формирования контекста для раздела с отзывами.
+        """
+        MY_LOGGER.debug('Вызван сервис для генерации контекста для раздела с отзывами')
+        try:
+            reviews_text = BotSettings.objects.get(key='reviews_text').value
+            reviews_link = BotSettings.objects.get(key='reviews_link').value
+        except ObjectDoesNotExist:
+            MY_LOGGER.warning('Не найдена запись в BotSettings по ключу "reviews_text" или "reviews_link"!')
+            return
+
+        return {'reviews_link': reviews_link, 'reviews_text': reviews_text}
+
+    @staticmethod
     def make_support_context():
         """
         Метод для формирования контекста для поддержки

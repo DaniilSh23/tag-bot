@@ -37,6 +37,9 @@ class Profiles(models.Model):
         verbose_name = 'профиль юзера'
         verbose_name_plural = 'профили пользователей'
 
+    def __str__(self):
+        return f"профиль {self.bot_user.tlg_username if self.bot_user.tlg_username else self.bot_user.tlg_id}"
+
 
 class BotSettings(models.Model):
     """

@@ -30,8 +30,15 @@ class SupportView(View):
         if not faq_context:
             MY_LOGGER.warning('Не определены данные для контекста FAQ')
             return HttpResponse(content='Не определены данные для контекста FAQ', status=400)
-        print(support_context | faq_context)
-        return render(request, template_name='webapp/support_faq.html', context=support_context | faq_context)
+
+        # Достаем контекст для раздела отзывов
+        reviews_context = FAQandSupportService.make_reviews_context()
+        if not faq_context:
+            MY_LOGGER.warning('Не определены данные для контекста FAQ')
+            return HttpResponse(content='Не определены данные для контекста FAQ', status=400)
+
+        return render(request, template_name='webapp/support_faq.html',
+                      context=support_context | faq_context | reviews_context)
 
 
 class TagAllView(View):

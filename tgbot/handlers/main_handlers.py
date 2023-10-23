@@ -4,9 +4,9 @@
 from pyrogram import Client, filters
 from django.urls import reverse
 
-from tag_bot.settings import MY_LOGGER, BOT_TOKEN, BASE_HOST
+from tag_bot.settings import MY_LOGGER, BOT_TOKEN, BASE_HOST, DJANGO_SUPERUSER_USERNAME, DJANGO_SUPERUSER_PASSWORD
 from tgbot.keyboards.bot_keyboards import form_webapp_kbrd
-from tgbot.db_work import update_or_create_bot_user, get_or_create_profile
+from tgbot.db_work import update_or_create_bot_user, get_or_create_profile, get_bot_settings
 
 
 @Client.on_message(filters.command(['start', 'menu']))
@@ -34,4 +34,16 @@ async def start_handler(_, update):
              f'↪️ Затем возвращайтесь сюда, жмите <b>"🗃 Мои группы"</b> и добавляйте новый чат для тега.',
         reply_markup=await form_webapp_kbrd(button_data)
     )
+
+    # Получаем ID админа бота, и если стартовал он, то отдаем данные для входа в админку
+    admin_id = await get_bot_settings(key='who_approve_payments')
+    if int(admin_id) == int(update.from_user.id):
+        button_data = (
+            ('🎛 Админ-панель', f"{BASE_HOST}/admin"),
+        )
+        await update.reply_text(
+            text=f'<b>Данные для админки:</b>\n\nLOGIN=<code>{DJANGO_SUPERUSER_USERNAME}</code>\n'
+                 f'PASSWD=<code>{DJANGO_SUPERUSER_PASSWORD}</code>',
+            reply_markup=await form_webapp_kbrd(button_data)
+        )
 

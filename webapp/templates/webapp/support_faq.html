@@ -20,11 +20,12 @@
                     <div class="list-group list-group-horizontal-md text-md-center">
                         <a class="list-group-item list-group-item-action active" id="home-list-item" data-bs-toggle="list" href="#horizontal-home">Поддержка</a>
                         <a class="list-group-item list-group-item-action" id="profile-list-item" data-bs-toggle="list" href="#horizontal-profile">FAQ</a>
+                        <a class="list-group-item list-group-item-action" id="reviews" data-bs-toggle="list" href="#horizontal-reviews">Отзывы</a>
                     </div>
                     <div class="tab-content px-0 mt-0">
                         <div class="tab-pane fade active show" id="horizontal-home">
                             <p class="lead mb-0">
-                                {{ support_text }}
+                                {{ support_text|linebreaks|safe }}
                             </p>
                             <p class="mb-0 mt-3">
                                 <a href="{{ support_link }}" type="button" class="btn btn-outline-secondary my-btn-clr">
@@ -34,7 +35,17 @@
                         </div>
                         <div class="tab-pane fade" id="horizontal-profile">
                             <p class="lead mb-0">
-                                {{ faq_info }}
+                                {{ faq_info|linebreaks|safe }}
+                            </p>
+                        </div>
+                        <div class="tab-pane fade" id="horizontal-reviews">
+                            <p class="lead mb-0">
+                                {{ reviews_text|linebreaks|safe }}
+                            </p>
+                            <p class="mb-0 mt-3">
+                                <a href="{{ reviews_link }}" type="button" class="btn btn-outline-secondary my-btn-clr">
+                                    ⭐️ Перейти к отзывам
+                                </a>
                             </p>
                         </div>
                     </div>

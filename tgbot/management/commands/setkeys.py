@@ -15,6 +15,8 @@ class Command(BaseCommand):
             ('faq_info', 'Какой-то текст для FAQ'),
             ('support_link', 'https://t.me/ygr_supp'),
             ('support_text', 'Какой-то текст для раздела поддержки'),
+            ('reviews_link', 'https://t.me/durov'),
+            ('reviews_text', 'Какой-то текст для раздела с отзывами'),
         )
         for i_bot_sett in bot_settings:
             obj, created = BotSettings.objects.get_or_create(

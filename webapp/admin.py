@@ -17,20 +17,40 @@ class BotSettingsAdmin(admin.ModelAdmin):
     )
 
 
+class ProfilesInline(admin.TabularInline):
+    """
+    Класс для инлайн отображения данных из таблицы Profiles на детальной странице BotUsers
+    """
+    model = Profiles
+    fields = ('balance',)
+    verbose_name = 'профиль'
+    verbose_name_plural = 'профили'
+    # readonly_fields = ('balance',)
+    extra = 3
+
+
 @admin.register(BotUser)
 class BotUserAdmin(admin.ModelAdmin):
     list_display = (
         "pk",
         "tlg_id",
         "tlg_username",
+        "balance",
         "start_bot_at",
     )
     list_display_links = (
         "pk",
         "tlg_id",
         "tlg_username",
+        "balance",
         "start_bot_at",
     )
+    inlines = [ProfilesInline]  # Добавляем вложенный класс
+
+    def balance(self, obj):
+        return obj.profiles.balance
+
+    balance.short_description = 'Balance'
 
 
 @admin.register(PaymentBills)

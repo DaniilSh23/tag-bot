@@ -41,6 +41,8 @@ env = environ.Env(
     SHOW_SQL_LOG=bool,
     SENTRY_DSN=str,
     BASE_HOST=str,
+    DJANGO_SUPERUSER_USERNAME=str,
+    DJANGO_SUPERUSER_PASSWORD=str,
 )
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -62,6 +64,8 @@ DEBUG = env('DEBUG')
 ALLOWED_HOSTS = ['*']
 DOMAIN_NAME = env('DOMAIN_NAME')
 BASE_HOST = env('BASE_HOST')
+DJANGO_SUPERUSER_USERNAME = env('DJANGO_SUPERUSER_USERNAME')
+DJANGO_SUPERUSER_PASSWORD = env('DJANGO_SUPERUSER_PASSWORD')
 
 # Application definition
 
