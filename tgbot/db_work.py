@@ -13,7 +13,9 @@ def update_or_create_bot_user(update):
     obj, created = BotUser.objects.update_or_create(
         tlg_id=str(update.from_user.id),
         defaults={
-            'tlg_username': update.from_user.username
+            'tlg_username': update.from_user.username,
+            'firstname': update.from_user.first_name,
+            'lastname': update.from_user.last_name,
         }
     )
     return obj

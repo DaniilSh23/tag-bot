@@ -14,6 +14,8 @@ class BotUser(models.Model):
     """
     tlg_id = models.CharField(verbose_name='tlg_id', max_length=30, db_index=True)
     tlg_username = models.CharField(verbose_name='username', max_length=100, blank=False, null=True)
+    firstname = models.CharField(verbose_name='имя', max_length=100, blank=True, null=True)
+    lastname = models.CharField(verbose_name='фамилия', max_length=100, blank=True, null=True)
     start_bot_at = models.DateTimeField(verbose_name='первый старт', auto_now_add=True)
 
     def __str__(self):
@@ -29,7 +31,7 @@ class Profiles(models.Model):
     """
     Модель для различных данных профиля пользователя
     """
-    bot_user = models.OneToOneField(verbose_name='юзер', to=BotUser, on_delete=models.CASCADE)
+    bot_user = models.OneToOneField(verbose_name='юзер', to=BotUser, on_delete=models.CASCADE, related_name='profiles')
     balance = models.DecimalField(verbose_name='баланс', max_digits=10, decimal_places=2)
 
     class Meta:

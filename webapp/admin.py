@@ -35,6 +35,8 @@ class BotUserAdmin(admin.ModelAdmin):
         "pk",
         "tlg_id",
         "tlg_username",
+        "firstname",
+        "lastname",
         "balance",
         "start_bot_at",
     )
@@ -42,9 +44,19 @@ class BotUserAdmin(admin.ModelAdmin):
         "pk",
         "tlg_id",
         "tlg_username",
+        "firstname",
+        "lastname",
         "balance",
         "start_bot_at",
     )
+    search_fields = (
+        "pk",
+        "tlg_id",
+        "tlg_username",
+        "firstname",
+        "lastname",
+    )
+    search_help_text = 'поиск по TG ID, username, имени и фамилии'
     inlines = [ProfilesInline]  # Добавляем вложенный класс
 
     def balance(self, obj):
