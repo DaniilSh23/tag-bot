@@ -1,3 +1,4 @@
+import asyncio
 import time
 
 from django.urls import reverse
@@ -99,6 +100,11 @@ async def tag_now_by_invite_handler(client: Client, update: UpdateChannelPartici
                           f'его TG ID == {bot_usr.id}')
         return
 
+    do_need_to_wait = LAST_TAG_MESSAGES_IN_CHATS.get(chat_id)
+    if do_need_to_wait == 'wait_bro':
+        MY_LOGGER.debug(f'Ждём перед новым тегом 0.5 сек., так как поймали значение {do_need_to_wait}')
+        await asyncio.sleep(0.5)  # Диман мозгоеб, нахуй ему это вот надо
+
     # Изменяем более раннее сообщение с тегом, добавляя в него новый юзернейм, если прошлый тег был менее 1 мин назад
     tag_msg_entity = LAST_TAG_MESSAGES_IN_CHATS.get(chat_id)
     if tag_msg_entity and (time.time() - tag_msg_entity.last_tag_timestamp < TAG_NOW_INTERVAL):
@@ -108,16 +114,26 @@ async def tag_now_by_invite_handler(client: Client, update: UpdateChannelPartici
             tag_msg_entity=tag_msg_entity,
             username=bot_usr.username,
         )
-        return
 
-    # Тегаем юзера в этом чате с рекламным текстом и файлами
-    msg_text = f"@{bot_usr.username}\n\n{group_chat.get('msg_text')}"
-    await send_tag_msg(
-        client=client,
-        group_chat=group_chat,
-        msg_text=msg_text,
-        chat_id=chat_id,
-    )
+    else:
+        ################
+        # INFO
+        # Устанавливаем значение, которое скажет следующему желающему тегнуться подождать,
+        # пока здесь не создастся инстанс TagMsgEntity. Это все из-за асинхронной работы.
+        # Если заинвайтить сразу двух юзеров, то они асинхронно тегаются, но на момент когда первый тегнулся,
+        # в хранилище LAST_TAG_MESSAGES_IN_CHATS ещё ниче не создалось. Поэтому мы тупо в него кладём строку
+        # 'wait_bro', по ней новый апдейт просто подождет перед тегом
+        ################
+        LAST_TAG_MESSAGES_IN_CHATS[chat_id] = 'wait_bro'
+
+        # Тегаем юзера в этом чате с рекламным текстом и файлами
+        msg_text = f"@{bot_usr.username}\n\n{group_chat.get('msg_text')}"
+        await send_tag_msg(
+            client=client,
+            group_chat=group_chat,
+            msg_text=msg_text,
+            chat_id=chat_id,
+        )
 
 
 @Client.on_message(filters.new_chat_members & filter_by_group_id)

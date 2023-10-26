@@ -244,7 +244,7 @@ TG_API_HASH = env('TG_API_HASH')
 LOOP = asyncio.new_event_loop()
 asyncio.set_event_loop(LOOP)
 TAG_NOW_INTERVAL = env('TAG_NOW_INTERVAL')
-LAST_TAG_MESSAGES_IN_CHATS = dict()  # {pyro ID чата: объект TagMsgEntity, ...}
+LAST_TAG_MESSAGES_IN_CHATS = dict()  # {pyro ID чата: объект TagMsgEntity | str, ...}
 
 # Настройки для проксирования запросов от Nginx при деплое через докер
 CSRF_TRUSTED_ORIGINS = ['http://0.0.0.0:8000']
