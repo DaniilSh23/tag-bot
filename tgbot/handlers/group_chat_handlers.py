@@ -8,6 +8,7 @@ from pyrogram.types import Message
 
 from tag_bot.settings import MY_LOGGER, LAST_TAG_MESSAGES_IN_CHATS, TAG_NOW_INTERVAL
 from tgbot.db_work import get_group_detail
+from tgbot.entities.tag_entities import TagMsgEntity
 from tgbot.filters.group_chat_filters import tag_all_filter, filter_by_group_id, \
     func_filter_invite_user_in_group
 from tgbot.utils.client_actions import send_tag_msg, edit_tag_msg
@@ -59,6 +60,7 @@ async def tag_all_handler(client: Client, update: Message):
                 client=client,
                 group_chat=group_chat,
                 msg_text=msg_text,
+                chat_id=str(update.chat.id),
             )
             msg_text = f"\n\n\n{group_chat.get('msg_text')}"
 
@@ -69,6 +71,7 @@ async def tag_all_handler(client: Client, update: Message):
             client=client,
             group_chat=group_chat,
             msg_text=msg_text,
+            chat_id=str(update.chat.id),
         )
 
 
@@ -103,7 +106,12 @@ async def tag_now_by_invite_handler(client: Client, update: UpdateChannelPartici
     do_need_to_wait = LAST_TAG_MESSAGES_IN_CHATS.get(chat_id)
     if do_need_to_wait == 'wait_bro':
         MY_LOGGER.debug(f'Ждём перед новым тегом 0.5 сек., так как поймали значение {do_need_to_wait}')
-        await asyncio.sleep(0.5)  # Диман мозгоеб, нахуй ему это вот надо
+        while True:
+            await asyncio.sleep(0.3)  # Диман мозгоеб, нахуй ему это вот надо
+            tag_msg_entity = LAST_TAG_MESSAGES_IN_CHATS.get(chat_id)
+            if isinstance(tag_msg_entity, TagMsgEntity):
+                MY_LOGGER.debug(f'Получен объект TagMsgEntity, переходим к тегу')
+                break
 
     # Изменяем более раннее сообщение с тегом, добавляя в него новый юзернейм, если прошлый тег был менее 1 мин назад
     tag_msg_entity = LAST_TAG_MESSAGES_IN_CHATS.get(chat_id)
@@ -159,6 +167,7 @@ async def tag_now_handler(client: Client, update: Message):
         client=client,
         group_chat=group_chat,
         msg_text=msg_text,
+        chat_id=str(update.chat.id)
     )
 
 
