@@ -1,13 +1,15 @@
+import time
+
 from django.urls import reverse
 from pyrogram import Client, filters
 from pyrogram.raw.types import UpdateChannelParticipant, UpdateChatParticipant
 from pyrogram.types import Message
 
-from tag_bot.settings import MY_LOGGER
+from tag_bot.settings import MY_LOGGER, LAST_TAG_MESSAGES_IN_CHATS, TAG_NOW_INTERVAL
 from tgbot.db_work import get_group_detail
 from tgbot.filters.group_chat_filters import tag_all_filter, filter_by_group_id, \
     func_filter_invite_user_in_group
-from tgbot.utils.client_actions import send_tag_msg
+from tgbot.utils.client_actions import send_tag_msg, edit_tag_msg
 
 
 @Client.on_message(filters.group & filters.command(commands=['id']))
@@ -70,7 +72,7 @@ async def tag_all_handler(client: Client, update: Message):
 
 
 @Client.on_raw_update(filters.group)
-async def tag_now_by_invite_handler(client, update: UpdateChannelParticipant | UpdateChatParticipant, raw_users,
+async def tag_now_by_invite_handler(client: Client, update: UpdateChannelParticipant | UpdateChatParticipant, raw_users,
                                     raw_channel):
     """
     Хэндлер для тега сразу пользователей, которые были приглашены в чат.
@@ -97,12 +99,24 @@ async def tag_now_by_invite_handler(client, update: UpdateChannelParticipant | U
                           f'его TG ID == {bot_usr.id}')
         return
 
+    # Изменяем более раннее сообщение с тегом, добавляя в него новый юзернейм, если прошлый тег был менее 1 мин назад
+    tag_msg_entity = LAST_TAG_MESSAGES_IN_CHATS.get(chat_id)
+    if tag_msg_entity and (time.time() - tag_msg_entity.last_tag_timestamp < TAG_NOW_INTERVAL):
+        await edit_tag_msg(
+            chat_id=chat_id,
+            client=client,
+            tag_msg_entity=tag_msg_entity,
+            username=bot_usr.username,
+        )
+        return
+
     # Тегаем юзера в этом чате с рекламным текстом и файлами
     msg_text = f"@{bot_usr.username}\n\n{group_chat.get('msg_text')}"
     await send_tag_msg(
         client=client,
         group_chat=group_chat,
         msg_text=msg_text,
+        chat_id=chat_id,
     )
 
 

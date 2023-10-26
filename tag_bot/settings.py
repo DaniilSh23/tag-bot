@@ -43,6 +43,7 @@ env = environ.Env(
     BASE_HOST=str,
     DJANGO_SUPERUSER_USERNAME=str,
     DJANGO_SUPERUSER_PASSWORD=str,
+    TAG_NOW_INTERVAL=int,
 )
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -242,6 +243,8 @@ TG_API_ID = env('TG_API_ID')
 TG_API_HASH = env('TG_API_HASH')
 LOOP = asyncio.new_event_loop()
 asyncio.set_event_loop(LOOP)
+TAG_NOW_INTERVAL = env('TAG_NOW_INTERVAL')
+LAST_TAG_MESSAGES_IN_CHATS = dict()  # {pyro ID чата: объект TagMsgEntity, ...}
 
 # Настройки для проксирования запросов от Nginx при деплое через докер
 CSRF_TRUSTED_ORIGINS = ['http://0.0.0.0:8000']
