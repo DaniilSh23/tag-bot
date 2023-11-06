@@ -55,11 +55,15 @@
                 <input class="my-filling-fields" type="text" id="tg-id-input" value="" name="tlg_id">
 
                 {% if messages %}
-                    <ul class="messages">
-                        {% for message in messages %}
-                            <li{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
-                        {% endfor %}
-                    </ul>
+                <div class="card-body">
+                    <div class="alert alert-danger" role="alert">
+                        <ul class="messages">
+                            {% for message in messages %}
+                                <li{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
+                            {% endfor %}
+                        </ul>
+                    </div>
+                </div>
                 {% endif %}
 
                 <div class="row">
@@ -114,7 +118,15 @@
                                 <div class="mb-3">
                                     <input type="file" name="group_chat_files" class="form-control my-filling-fields" aria-describedby="inputGroupFileAddon04" aria-label="Upload" multiple>
                                     <div class="col-auto form-text">
-                                        Укажите сообщение, которое увидят приглашенные в чат юзеры. Вы также можете выбрать несколько файлов для отправки.
+                                        <p>Укажите сообщение, которое увидят приглашенные в чат юзеры. Вы также можете выбрать несколько файлов для отправки.</p>
+                                    </div>
+                                    <div>
+                                        <small class="text-light fw-semibold"><mark>
+                                            ❗️Обратите внимание:
+                                            <br> 🔹 Без медиа кол-во символов: <code>1648</code>
+                                            <br> 🔹 С медиа кол-во символов: <code>648</code>
+                                            <br> 🔹 *Напоминаем что остаток по кол-ву символов занимают теги (@)
+                                        </mark></small>
                                     </div>
                                 </div>
 

@@ -10,12 +10,14 @@ from webapp.forms import BalanceForm, SecPayStepForm, CheckPaymentForm, Multiply
 from webapp.services.balance_services import BalanceServices
 from webapp.services.common_services import FAQandSupportService
 from webapp.services.groups_services import GroupsService
+from webapp.utils import check_text_length
 
 
 class SupportView(View):
     """
     Вьюшка для страницы поддержки и FAQ
     """
+
     def get(self, request):
         MY_LOGGER.info(f'Получен GET запрос на вьюшку поддержки и FAQ')
 
@@ -45,6 +47,7 @@ class TagAllView(View):
     """
     Вьюшка для функции тегнуть всех
     """
+
     def get(self, request, tlg_id, group_id):
         MY_LOGGER.info(f'Пришел GET запрос на вьюшку для тега всех | tlg_id={tlg_id}, group_id={group_id}')
 
@@ -149,6 +152,18 @@ class GroupsView(View):
 
         form = GroupChatForm(request.POST)
         file_form = MultiplyFileForm(request.FILES)
+
+        with_file = True if len(request.FILES.getlist("group_chat_files")) > 0 else False
+        check_text_length_result = check_text_length(text=form.data.get('msg_text'), with_file=with_file)
+
+        if not check_text_length_result:
+            MY_LOGGER.warning(f'Длина текста превышает максимальное значение! '
+                              f'Длина текста: {len(form.data.get("msg_text"))} | '
+                              f'Файлы: {request.FILES.getlist("group_chat_files")}')
+            err_msgs.error(request, f'Ошибка: Длина текста не должна превышать 648 символов (с файлами), '
+                                    f'1648 символов (без файлов). Длина Вашего текста {len(form.data.get("msg_text"))}')
+            return redirect(to=f"{reverse('webapp:groups')}?tlg_id={request.POST.get('tlg_id')}")
+
         if form.is_valid() and file_form.is_valid():
 
             # Вызываем сервис для бизнес-логики
@@ -175,6 +190,7 @@ class GroupChatDeleteView(View):
     """
     Вьюшка для удаления записи о групповом чате
     """
+
     def get(self, request, tlg_id, group_id):
         """
         Обработка GET запроса для удаления группового чата.

@@ -60,3 +60,15 @@ def send_message_from_bot(text, disable_notification=True, file_path=None, targe
         return
     MY_LOGGER.success(f'Успешная отправка сообщения {text!r} от лица бота.')
     return True
+
+
+def check_text_length(text: str, with_file: bool = True):
+    """
+    Функция для проверки длины текста. С файлом максимум 648 символов, без файла 1648.
+    """
+    MY_LOGGER.debug(f'Вызвана функция для проверки длины текста.')
+    match with_file:
+        case True:
+            return len(text) <= 648
+        case False:
+            return len(text) <= 1648
