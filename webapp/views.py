@@ -96,6 +96,18 @@ class GroupDetailView(View):
 
         form = GroupChatForm(request.POST)
         file_form = MultiplyFileForm(request.FILES)
+
+        # Проверяем длину текста на соответствия ограничениям телеграмма
+        with_file = True if len(request.FILES.getlist("group_chat_files")) > 0 else False
+        check_text_length_result = check_text_length(text=form.data.get('msg_text'), with_file=with_file)
+        if not check_text_length_result:
+            MY_LOGGER.warning(f'Длина текста превышает максимальное значение! '
+                              f'Длина текста: {len(form.data.get("msg_text"))} | '
+                              f'Файлы: {request.FILES.getlist("group_chat_files")}')
+            err_msgs.error(request, f'Ошибка: Длина текста не должна превышать 648 символов (с файлами), '
+                                    f'1648 символов (без файлов). Длина Вашего текста {len(form.data.get("msg_text"))}')
+            return redirect(to=reverse('webapp:group_detail', kwargs={'tlg_id': tlg_id, 'group_id': group_id}))
+
         if form.is_valid() and file_form.is_valid():
 
             # Вызываем сервис для бизнес-логики
@@ -153,9 +165,9 @@ class GroupsView(View):
         form = GroupChatForm(request.POST)
         file_form = MultiplyFileForm(request.FILES)
 
+        # Проверяем длину текста на соответствия ограничениям телеграмма
         with_file = True if len(request.FILES.getlist("group_chat_files")) > 0 else False
         check_text_length_result = check_text_length(text=form.data.get('msg_text'), with_file=with_file)
-
         if not check_text_length_result:
             MY_LOGGER.warning(f'Длина текста превышает максимальное значение! '
                               f'Длина текста: {len(form.data.get("msg_text"))} | '
